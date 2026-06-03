@@ -1,0 +1,75 @@
+/* openClass — LiveKit theme bridge (syncs with app light/dark via data-lk-theme) */
+
+.openclass-livekit-room,
+.openclass-livekit {
+  --lk-font-family: var(--font-sans, ui-sans-serif, system-ui, sans-serif);
+  --lk-border-radius: var(--radius-lg, 0.625rem);
+  --lk-grid-gap: 0.5rem;
+}
+
+/* Light — matches app :root */
+.openclass-livekit[data-lk-theme="light"],
+.openclass-livekit-room[data-lk-theme="light"] {
+  color-scheme: light;
+  --lk-bg: var(--background);
+  --lk-bg2: var(--muted);
+  --lk-bg3: var(--card);
+  --lk-bg4: var(--accent);
+  --lk-bg5: var(--secondary);
+  --lk-fg: var(--foreground);
+  --lk-fg2: var(--foreground);
+  --lk-fg3: var(--muted-foreground);
+  --lk-fg4: var(--muted-foreground);
+  --lk-fg5: var(--muted-foreground);
+  --lk-border-color: var(--border);
+  --lk-accent-fg: var(--primary-foreground);
+  --lk-accent-bg: var(--primary);
+  --lk-control-bg: var(--muted);
+  --lk-control-fg: var(--foreground);
+  --lk-control-hover-bg: var(--accent);
+  --lk-control-active-bg: var(--secondary);
+  --lk-control-active-hover-bg: var(--accent);
+}
+
+/* Dark — matches app .dark (LiveKit "default" theme slot) */
+.dark .openclass-livekit[data-lk-theme="default"],
+.dark .openclass-livekit-room[data-lk-theme="default"] {
+  color-scheme: dark;
+  --lk-bg: var(--background);
+  --lk-bg2: var(--card);
+  --lk-bg3: var(--muted);
+  --lk-bg4: var(--accent);
+  --lk-bg5: var(--secondary);
+  --lk-fg: var(--foreground);
+  --lk-fg2: var(--foreground);
+  --lk-fg3: var(--muted-foreground);
+  --lk-fg4: var(--muted-foreground);
+  --lk-fg5: var(--muted-foreground);
+  --lk-border-color: var(--border);
+  --lk-accent-fg: var(--primary-foreground);
+  --lk-accent-bg: var(--primary);
+  --lk-control-bg: var(--muted);
+  --lk-control-fg: var(--foreground);
+  --lk-control-hover-bg: var(--accent);
+  --lk-control-active-bg: var(--secondary);
+  --lk-control-active-hover-bg: var(--accent);
+}
+
+.openclass-lk-screenshare {
+  max-height: 42%;
+  min-height: 8rem;
+}
+
+.openclass-lk-screenshare .lk-grid-layout {
+  max-height: 100%;
+}
+
+.openclass-livekit .lk-control-bar {
+  border-top: 1px solid var(--lk-border-color);
+  background-color: var(--lk-bg2);
+}
+
+.openclass-livekit .lk-button[aria-pressed="true"] {
+  background-color: var(--lk-accent-bg);
+  color: var(--lk-accent-fg);
+}
