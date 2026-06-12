@@ -95,6 +95,8 @@ export interface Assignment {
   description?: string
 
   attachments?: string[]
+  /** Display names for each entry in `attachments` (same order). */
+  attachmentNames?: string[]
 
   dueDate?: string
   maxScore?: number
@@ -174,12 +176,12 @@ export interface ClassResource {
   classId: string
   uploadedBy: string
 
-  chapterId?: string  // which chapter this resource belongs to (undefined = uncategorized)
+  chapterId?: string  // which chapter this resource belongs to  
 
   title: string
   description?: string
 
-  fileName: string   // original file name as uploaded
+  fileName: string   
   fileUrl: string
   fileType: string
   fileSize: number
@@ -261,7 +263,7 @@ export interface VideoRoom {
   title: string
   active: boolean
   recordingEnabled?: boolean
-  /** @deprecated Legacy Daily field — use livekitRoomName */
+  /** @deprecated Legacy Daily field —  */
   dailyRoomName?: string
   /** @deprecated Legacy Daily field */
   dailyRoomUrl?: string

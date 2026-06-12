@@ -23,10 +23,10 @@ export function SubscriptionSetup() {
     setIsCreating(true)
     try {
       const result = await createSubscriptionAction(videoEnabled, aiEnabled)
-      if (result.success) {
+      if (result.success && result.data) {
         window.location.href = result.data.checkoutUrl
       } else {
-        toast.error(result.error || t.errors.generic)
+        toast.error((!result.success && result.error) || t.errors.generic)
         setIsCreating(false)
       }
     } catch {

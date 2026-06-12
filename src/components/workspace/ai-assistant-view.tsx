@@ -51,8 +51,7 @@ export function AIAssistantView({ activeConversationId, onConversationChange }: 
 
   const aiEnabled = settings?.allowAIAccess !== false
 
-  // Check real AI access (subscription + feature flag) on mount
-  useEffect(() => {
+   useEffect(() => {
     checkAIAccessAction().then((result) => {
       if (result.success && result.data) {
         setAiAccess(result.data)

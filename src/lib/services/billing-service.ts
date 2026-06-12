@@ -26,17 +26,12 @@ export class BillingService {
     }
     this.polar = new Polar({ accessToken, server : "sandbox" })
   }
-
-  /**
-   * Calculate total monthly cost based on enabled features
-   */
+ 
   calculateMonthlyTotal(videoEnabled: boolean, aiEnabled: boolean): number {
     return calculateMonthlyTotal(videoEnabled, aiEnabled)
   }
 
-  /**
-   * Create a new subscription for an organization
-   */
+  
   async createSubscription(
     organizationId: string,
     organizationName: string,
@@ -65,16 +60,15 @@ export class BillingService {
       const monthlyTotal = this.calculateMonthlyTotal(videoEnabled, aiEnabled)
 
       // Create product for this organization's subscription
-  // Create product for this organization's subscription
+      // Create product for this organization's subscription
       const product = await this.polar.products.create({
         recurringInterval: "month",
-        // REMOVE THIS LINE: organizationId: process.env.POLAR_ORGANIZATION_ID!,
         name: `${organizationName} - Monthly Subscription`,
         description: `Base access (200 DH)${videoEnabled ? " + Video (150 DH)" : ""}${aiEnabled ? " + AI (150 DH)" : ""}`,
         prices: [
           {
             amountType: "fixed",
-            priceAmount: monthlyTotal * 100, // Convert to cents
+            priceAmount: monthlyTotal * 100,  
             priceCurrency: "mad",
           },
         ],
@@ -101,11 +95,7 @@ export class BillingService {
       throw new Error("Failed to create subscription")
     }
   }
-
-  /**
-   * Update subscription features (add/remove video or AI)
-   * Feature flags are tracked in our own DB; Polar metadata is not used.
-   */
+ 
   async updateSubscriptionFeatures(
     polarSubscriptionId: string,
     videoEnabled: boolean,
@@ -115,9 +105,7 @@ export class BillingService {
     // The caller handles DB persistence; nothing to update on Polar's side.
   }
 
-  /**
-   * Cancel subscription at period end
-   */
+ 
   async cancelSubscription(polarSubscriptionId: string): Promise<void> {
     try {
       await this.polar.subscriptions.update({
@@ -129,10 +117,7 @@ export class BillingService {
       throw new Error("Failed to cancel subscription")
     }
   }
-
-  /**
-   * Reactivate a canceled subscription
-   */
+ 
   async reactivateSubscription(polarSubscriptionId: string): Promise<void> {
     try {
       await this.polar.subscriptions.update({
@@ -145,9 +130,7 @@ export class BillingService {
     }
   }
 
-  /**
-   * Get subscription details from Polar
-   */
+   
   async getSubscriptionDetails(polarSubscriptionId: string) {
     try {
       return await this.polar.subscriptions.get({
@@ -159,9 +142,7 @@ export class BillingService {
     }
   }
 
-  /**
-   * List all orders (invoices) for a customer
-   */
+   
   async getInvoices(polarCustomerId: string) {
     try {
       return await this.polar.orders.list({
@@ -172,10 +153,7 @@ export class BillingService {
       throw new Error("Failed to get invoices")
     }
   }
-
-  /**
-   * Create a customer portal session for self-service billing management
-   */
+ 
   async createCustomerPortalSession(polarCustomerId: string): Promise<string> {
     try {
       const session = await this.polar.customerSessions.create({
@@ -188,18 +166,13 @@ export class BillingService {
     }
   }
 
-  /**
-   * Verify webhook signature (for webhook endpoints)
-   */
+ 
   verifyWebhookSignature(payload: string, signature: string, secret: string): boolean {
-    // Implement webhook signature verification based on Polar's documentation
-    // This is a placeholder - check Polar docs for actual implementation
+     // future impl
     return true
   }
 
-  /**
-   * Check if organization has access to a feature
-   */
+ 
   async checkFeatureAccess(
     organizationId: string,
     feature: "video" | "ai"

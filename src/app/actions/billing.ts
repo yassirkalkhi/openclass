@@ -59,8 +59,7 @@ export async function createSubscriptionAction(
       if (existingSubscription.status === "active" || existingSubscription.status === "trialing") {
         return { success: false, error: "Organization already has an active subscription" }
       }
-      // Remove stale canceled/incomplete subscription so a new one can be created
-      await subscriptionRepo.delete(existingSubscription.id)
+       await subscriptionRepo.delete(existingSubscription.id)
     }
 
     // Get user profile for email
@@ -79,10 +78,7 @@ export async function createSubscriptionAction(
       videoEnabled,
       aiEnabled
     )
-
-    // Optimistically store the chosen feature flags on the organization so the
-    // UI unlocks as soon as the user returns from the checkout page.
-    // The webhook will later create the full subscription record and confirm status.
+ 
     await organizationRepo.update(orgId, {
       videoFeatureEnabled: videoEnabled,
       aiFeatureEnabled: aiEnabled,

@@ -1,10 +1,4 @@
-/**
- * Prefix used to tag billing-related errors so the UI can distinguish them
- * from generic errors and show the appropriate payment notice instead of a
- * plain error message.
- *
- * Safe to import in both client and server code — no server-only imports.
- */
+ 
 export const BILLING_ERROR_PREFIX = "BILLING_LOCKED:"
 
 export function makeBillingError(reason: string): string {

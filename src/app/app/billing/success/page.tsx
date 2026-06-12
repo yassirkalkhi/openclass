@@ -26,13 +26,11 @@ export default function BillingSuccessPage() {
           setSyncState("done")
           return
         }
-        // Subscription not active in Polar yet — retry
-        attempts++
+         attempts++
         if (attempts < maxAttempts) {
           setTimeout(trySync, delayMs)
         } else {
-          // Give up polling but still show success (webhook will catch up)
-          setSyncState("done")
+           setSyncState("done")
         }
       } catch {
         setSyncState("error")

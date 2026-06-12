@@ -86,8 +86,7 @@ async function handleSubscriptionCreated(data: any) {
 
   await subscriptionRepo.create(subscription)
 
-  // Update organization
-  await organizationRepo.update(organizationId, {
+   await organizationRepo.update(organizationId, {
     subscriptionId: subscription.id,
     subscriptionStatus: status,
     videoFeatureEnabled: videoEnabled,
@@ -107,8 +106,7 @@ async function handleSubscriptionUpdated(data: any) {
     return
   }
 
-  // Use metadata from the event if present; otherwise keep the existing DB values
-  const videoEnabled =
+   const videoEnabled =
     metadata?.videoEnabled !== undefined
       ? metadata.videoEnabled === "true"
       : subscription.videoFeatureEnabled
@@ -126,8 +124,7 @@ async function handleSubscriptionUpdated(data: any) {
     updatedAt: new Date().toISOString(),
   })
 
-  // Update organization
-  await organizationRepo.update(subscription.organizationId, {
+   await organizationRepo.update(subscription.organizationId, {
     subscriptionStatus: status,
     videoFeatureEnabled: videoEnabled,
     aiFeatureEnabled: aiEnabled,
@@ -148,8 +145,7 @@ async function handleSubscriptionCanceled(data: any) {
 
   await subscriptionRepo.updateStatus(subscription.id, "canceled")
 
-  // Update organization
-  await organizationRepo.update(subscription.organizationId, {
+   await organizationRepo.update(subscription.organizationId, {
     subscriptionStatus: "canceled",
     updatedAt: new Date().toISOString(),
   })
@@ -172,8 +168,7 @@ async function handleSubscriptionActive(data: any) {
     new Date(current_period_end * 1000).toISOString()
   )
 
-  // Update organization — preserve existing feature flags
-  await organizationRepo.update(subscription.organizationId, {
+   await organizationRepo.update(subscription.organizationId, {
     subscriptionStatus: "active",
     videoFeatureEnabled: subscription.videoFeatureEnabled,
     aiFeatureEnabled: subscription.aiFeatureEnabled,
@@ -192,13 +187,12 @@ async function handleInvoicePaid(data: any) {
     return
   }
 
-  // Create transaction record
-  const transaction = {
+   const transaction = {
     id: uuidv4(),
     organizationId: subscription.organizationId,
     subscriptionId: subscription.id,
     polarInvoiceId: id,
-    amount: amount / 100, // Convert from cents
+    amount: amount / 100,  
     currency,
     status: "paid" as const,
     description: "Monthly subscription payment",
@@ -219,13 +213,12 @@ async function handleInvoicePaymentFailed(data: any) {
     return
   }
 
-  // Create transaction record
-  const transaction = {
+   const transaction = {
     id: uuidv4(),
     organizationId: subscription.organizationId,
     subscriptionId: subscription.id,
     polarInvoiceId: id,
-    amount: amount / 100, // Convert from cents
+    amount: amount / 100,  
     currency,
     status: "failed" as const,
     description: "Monthly subscription payment failed",
@@ -234,11 +227,9 @@ async function handleInvoicePaymentFailed(data: any) {
 
   await transactionRepo.create(transaction)
 
-  // Update subscription status
-  await subscriptionRepo.updateStatus(subscription.id, "past_due")
+   await subscriptionRepo.updateStatus(subscription.id, "past_due")
 
-  // Update organization
-  await organizationRepo.update(subscription.organizationId, {
+   await organizationRepo.update(subscription.organizationId, {
     subscriptionStatus: "past_due",
     updatedAt: new Date().toISOString(),
   })

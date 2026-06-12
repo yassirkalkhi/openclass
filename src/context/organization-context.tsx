@@ -26,8 +26,7 @@ export function OrganizationProvider({
   const [organization, setOrganization] = useState<Organization | null>(initialOrganization)
   const { user, refresh } = useAuth()
   const router = useRouter()
-
-  // Update organization when initial prop changes
+ 
   useEffect(() => {
     setOrganization(initialOrganization)
   }, [initialOrganization])

@@ -37,8 +37,7 @@ type LiveKitCredentials = { serverUrl: string; roomName: string; token: string }
 export function VideoChannelView({ channel, classSlug }: { channel: Channel; classSlug: string }) {
   const { membership } = useClass()
   const { isOrgOwner } = useAuth()
-  // Starting/ending sessions is a teacher/owner-only action
-  const canManage = isOrgOwner || membership.role === "teacher"
+   const canManage = isOrgOwner || membership.role === "teacher"
   const canJoin = usePermission("join_video")
   const { organization } = useOrganization()
   const { t } = useI18n()
@@ -98,8 +97,7 @@ export function VideoChannelView({ channel, classSlug }: { channel: Channel; cla
     } finally { setBusy(false) }
   }
 
-  // Subscription paywall
-  if (!organization?.videoFeatureEnabled) {
+   if (!organization?.videoFeatureEnabled) {
     return (
       <div className="flex h-full flex-col">
         <div className="flex h-16 shrink-0 items-center justify-between border-b bg-background/80 px-6 backdrop-blur-xl">

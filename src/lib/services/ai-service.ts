@@ -26,10 +26,7 @@ const resourceRepository = new ResourceRepository()
 const permissionService = new PermissionService()
 
 export class AIService {
-  /**
-   * Start a new AI conversation in a class.
-   * Checks class settings for AI access.
-   */
+   
   async startConversation(
     classId: string,
     userId: string,
@@ -56,9 +53,7 @@ export class AIService {
     return conversation
   }
 
-  /**
-   * Create a user message (for streaming workflow)
-   */
+ 
   async createUserMessage(
     conversationId: string,
     content: string,
@@ -77,7 +72,7 @@ export class AIService {
 
     const now = new Date().toISOString()
 
-    // Store user message
+   
     const userMessage: AIMessage = {
       id: generateId(),
       conversationId,
@@ -90,9 +85,7 @@ export class AIService {
     return userMessage
   }
 
-  /**
-   * Generate streaming response for AI
-   */
+ 
   async *generateStreamingResponse(
     conversationId: string,
     userMessage: string,
@@ -108,18 +101,21 @@ export class AIService {
     // Check AI access permission
     await permissionService.requirePermission(conversation.classId, userId, "use_ai")
 
-    // Retrieve context from indexed resources (RAG)
+    // Retrieve context from indexed resources 
     const context = await this.retrieveContext(conversation.classId, userMessage)
 
-    // Build system context for the AI
+    //  system context for the AI
     const conversationHistory = await messageRepository.getRecentByConversation(
       conversationId,
       10
     )
-
-    // Compile fetched vector chunks into text context
+ 
     const contextText = context.chunks
-      .map((chunk) => chunk.chunkText)
+      .map((chunk) => {
+        const chapter = (chunk.metadata as { chapterTitle?: string } | undefined)?.chapterTitle
+        const prefix = chapter ? `[Chapter: ${chapter}]\n` : ""
+        return `${prefix}${chunk.chunkText}`
+      })
       .join("\n\n---\n\n")
 
     const formattedHistory = conversationHistory.map((msg) => ({
@@ -158,7 +154,6 @@ export class AIService {
         yield { type: "sources", sources: context.sources }
       }
 
-      // Store the complete assistant message
       const assistantMessage: AIMessage = {
         id: generateId(),
         conversationId,
@@ -176,14 +171,7 @@ export class AIService {
     }
   }
 
-  /**
-   * Send a message in an AI conversation.
-   * Retrieves relevant context from embedding chunks (RAG),
-   * then stores the user message and AI response.
-   *
-   * NOTE: The actual AI response generation (LLM call) is left
-   * as a placeholder. Integrate your preferred AI provider here.
-   */
+
   async sendMessage(
     conversationId: string,
     content: string,
@@ -202,7 +190,6 @@ export class AIService {
 
     const now = new Date().toISOString()
 
-    // Store user message
     const userMessage: AIMessage = {
       id: generateId(),
       conversationId,
@@ -212,27 +199,24 @@ export class AIService {
     }
     await messageRepository.create(userMessage)
 
-    // Retrieve context from indexed resources (RAG)
+    // Retrieve context from indexed resources  
     const context = await this.retrieveContext(conversation.classId, content)
 
-    // Build system context for the AI
+    //  system context for the AI
     const conversationHistory = await messageRepository.getRecentByConversation(
       conversationId,
       10
     )
 
-    // Generate AI response
-    // TODO: Integrate actual LLM provider (OpenAI, Anthropic, etc.)
+    
     const aiResponseContent = await this.generateResponse(
       content,
       context.chunks,
       conversationHistory
     )
 
-    // Build sources from matched resources
     const sources: AISource[] = context.sources
 
-    // Store assistant message
     const assistantMessage: AIMessage = {
       id: generateId(),
       conversationId,
@@ -246,19 +230,16 @@ export class AIService {
     return { userMessage, assistantMessage }
   }
 
-  /**
-   * Retrieve relevant embedding chunks for RAG context.
-   */
+ 
   private async retrieveContext(
     classId: string,
     query: string
   ): Promise<{ chunks: EmbeddingChunk[]; sources: AISource[] }> {
-    // 1. Run similarity query inside the class's isolated namespace
-    // We pass 'data' instead of 'vector' to use Upstash's native embedding generation
+ 
     const vectorMatches = await vectorIndex.query<UpstashVectorMetadata>(
       {
         data: query,
-        topK: 5, // Return top 5 matching blocks
+        topK: 5, // Return top 5 matches
         includeMetadata: true,
       },
       { namespace: `class-${classId}` }
@@ -268,16 +249,17 @@ export class AIService {
       return { chunks: [], sources: [] }
     }
 
-    // 2. Map Upstash vectors directly to your local entity format
     const chunks: EmbeddingChunk[] = vectorMatches.map((match) => ({
       id: match.id.toString(),
       mediaId: match.metadata?.mediaId ?? "",
       chunkText: match.metadata?.chunkText ?? "",
       embeddingId: match.id.toString(),
+      metadata: {
+        chapterTitle: match.metadata?.chapterTitle,
+      },
       createdAt: new Date().toISOString(),
     }))
 
-    // 3. Extract uniquely matched media tracking IDs to associate citation records
     const matchedMediaIds = Array.from(new Set(chunks.map((c) => c.mediaId)))
     const sources: AISource[] = []
 
@@ -298,10 +280,7 @@ export class AIService {
     return { chunks, sources }
   }
 
-  /**
-   * Generate an AI response.
-   * Placeholder — integrate your LLM provider here.
-   */
+ 
   private async generateResponse(
     userMessage: string,
     contextChunks: EmbeddingChunk[],
@@ -309,7 +288,11 @@ export class AIService {
   ): Promise<string> {
     // Compile fetched vector chunks into text context
     const contextText = contextChunks
-      .map((chunk) => chunk.chunkText)
+      .map((chunk) => {
+        const chapter = (chunk.metadata as { chapterTitle?: string } | undefined)?.chapterTitle
+        const prefix = chapter ? `[Chapter: ${chapter}]\n` : ""
+        return `${prefix}${chunk.chunkText}`
+      })
       .join("\n\n---\n\n")
 
 
@@ -339,20 +322,15 @@ export class AIService {
       throw new Error("Failed to generate a completion response from the AI coordinator.")
     }
   }
-  /**
-   * Get all conversations for a user in a class.
-   */
+ 
   async getConversations(
     classId: string,
     userId: string
   ): Promise<AIConversation[]> {
-    // await permissionService.requireMembership(classId, userId)
     return conversationRepository.getByUser(classId, userId)
   }
 
-  /**
-   * Get a full conversation with all messages.
-   */
+ 
   async getConversation(
     conversationId: string,
     userId: string
@@ -360,7 +338,6 @@ export class AIService {
     const conversation = await conversationRepository.getById(conversationId)
     if (!conversation) return null
 
-    // Only the conversation owner can view it
     if (conversation.userId !== userId) {
       throw new Error("Forbidden: You can only view your own conversations")
     }
@@ -369,9 +346,7 @@ export class AIService {
     return { conversation, messages }
   }
 
-  /**
-   * Update a conversation title.
-   */
+
   async updateConversationTitle(
     conversationId: string,
     title: string,
@@ -387,9 +362,7 @@ export class AIService {
     await conversationRepository.update(conversationId, { title })
   }
 
-  /**
-   * Delete a conversation and all its messages.
-   */
+
   async deleteConversation(
     conversationId: string,
     userId: string
@@ -405,15 +378,11 @@ export class AIService {
     await conversationRepository.delete(conversationId)
   }
 
-  // ===== Embedding Chunk Management (for pipeline use) =====
-
-  /**
-   * Store embedding chunks for a resource (called by the indexing pipeline).
-   */
   async storeEmbeddingChunks(
     classId: string,
     mediaId: string,
-    chunks: Array<{ chunkText: string; embeddingId: string; metadata?: Record<string, unknown> }>
+    chunks: Array<{ chunkText: string; embeddingId: string; metadata?: Record<string, unknown> }>,
+    chapterTitle?: string
   ): Promise<void> {
     const now = new Date().toISOString()
     const embeddingChunks: EmbeddingChunk[] = chunks.map((chunk) => ({
@@ -427,21 +396,19 @@ export class AIService {
     await embeddingChunkRepository.batchCreate(embeddingChunks)
 
     const upstashPayload = chunks.map((chunk, index) => ({
-      id: embeddingChunks[index].id, // Maintain an identical shared ID
-      data: chunk.chunkText,         // Upstash will natively generate the vector array for this string
+      id: embeddingChunks[index].id,
+      data: chunk.chunkText,
       metadata: {
         mediaId,
         chunkText: chunk.chunkText,
-      },
+        ...(chapterTitle ? { chapterTitle } : {}),
+      } satisfies import("@/lib/upstash/upstash").UpstashVectorMetadata,
     }))
 
-    // 4. Upload directly to Upstash inside the class namespace boundary
     await vectorIndex.upsert(upstashPayload, { namespace: `class-${classId}` })
   }
 
-  /**
-   * Delete all embedding chunks for a resource.
-   */
+  
   async deleteEmbeddingChunks(classId: string, mediaId: string): Promise<void> {
     const localChunks = await embeddingChunkRepository.getByMediaIds([mediaId])
 

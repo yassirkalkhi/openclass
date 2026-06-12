@@ -18,8 +18,7 @@ export async function countOrgOwners(organizationId: string): Promise<number> {
   const members = await orgMemberRepository.getByOrganization(organizationId)
   return members.filter((m) => normalizeOrgRole(m.role) === "owner").length
 }
-
-/** True when the user is an owner of the organization that owns this class. */
+ 
 export async function isOrgOwnerForClass(
   classId: string,
   userId: string
@@ -29,8 +28,7 @@ export async function isOrgOwnerForClass(
   return isOrgOwner(cls.organizationId, userId)
 }
 
-/** Virtual membership so org owners can access classes they are not enrolled in. */
-export function syntheticOrgOwnerClassMember(
+ export function syntheticOrgOwnerClassMember(
   classId: string,
   userId: string
 ): ClassMember {

@@ -35,3 +35,13 @@ export async function getUnreadNotificationCountAction(): Promise<ActionResult<n
     return actionError(e)
   }
 }
+
+export async function markAllNotificationsReadAction(): Promise<ActionResult> {
+  try {
+    const userId = await getActionUserId()
+    await notificationService.markAllRead(userId)
+    return { success: true, data: undefined }
+  } catch (e) {
+    return actionError(e)
+  }
+}

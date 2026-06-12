@@ -18,8 +18,7 @@ export async function GET() {
 
     const response = NextResponse.redirect(googleAuthUrl)
 
-    // Store state in a short-lived HttpOnly cookie for CSRF validation on callback
-    response.cookies.set('oauth_state', state, {
+     response.cookies.set('oauth_state', state, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',

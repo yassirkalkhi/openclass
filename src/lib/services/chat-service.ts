@@ -21,9 +21,7 @@ const permissionService = new PermissionService()
 const notificationService = new NotificationService()
 
 export class ChatService {
-  /**
-   * Send a message to a channel.
-   */
+ 
   async sendMessage(
     channelId: string,
     senderId: string,
@@ -38,8 +36,7 @@ export class ChatService {
 
     await permissionService.requirePermission(channel.classId, senderId, "send_messages")
 
-    // Announcement channels: only teachers/owners can send
-    if (channel.type === "announcement") {
+     if (channel.type === "announcement") {
       await permissionService.requireRole(channel.classId, senderId, "teacher")
     }
 
@@ -60,8 +57,7 @@ export class ChatService {
     }
     await messageRepository.create(message)
 
-    // Create attachments if provided
-    if (options?.attachments && options.attachments.length > 0) {
+     if (options?.attachments && options.attachments.length > 0) {
       const attachments: MessageAttachment[] = options.attachments.map((a) => ({
         ...a,
         id: generateId(),
@@ -69,8 +65,7 @@ export class ChatService {
         createdAt: now,
       }))
       await attachmentRepository.batchCreate(attachments)
-      // Update message with attachment references
-      await messageRepository.update(messageId, { attachments })
+       await messageRepository.update(messageId, { attachments })
     }
 
     if (channel.type === "announcement") {
@@ -88,9 +83,7 @@ export class ChatService {
     return message
   }
 
-  /**
-   * Get a single message by ID (caller must be a member of the channel's class).
-   */
+  
   async getMessageById(messageId: string, userId: string): Promise<Message> {
     const message = await messageRepository.getById(messageId)
     if (!message) throw new Error("Message not found")
@@ -102,15 +95,12 @@ export class ChatService {
 
     return message
   }
-
-  /**
-   * Edit a message. Only the original sender can edit.
-   */
+ 
   async editMessage(
     messageId: string,
     content: string,
     userId: string
-  ): Promise<void> {
+  ): Promise<Message> {
     const message = await messageRepository.getById(messageId)
     if (!message) throw new Error("Message not found")
 
@@ -118,16 +108,17 @@ export class ChatService {
       throw new Error("Forbidden: You can only edit your own messages")
     }
 
+    const updatedAt = new Date().toISOString()
     await messageRepository.update(messageId, {
       content,
       edited: true,
-      updatedAt: new Date().toISOString(),
+      updatedAt,
     })
+
+    return { ...message, content, edited: true, updatedAt }
   }
 
-  /**
-   * Delete a message. Sender or teachers/owners can delete.
-   */
+ 
   async deleteMessage(messageId: string, userId: string): Promise<void> {
     const message = await messageRepository.getById(messageId)
     if (!message) throw new Error("Message not found")
@@ -151,9 +142,7 @@ export class ChatService {
     await messageRepository.delete(messageId)
   }
 
-  /**
-   * Pin/unpin a message. Requires teacher role.
-   */
+ 
   async togglePin(messageId: string, userId: string): Promise<boolean> {
     const message = await messageRepository.getById(messageId)
     if (!message) throw new Error("Message not found")
@@ -167,14 +156,11 @@ export class ChatService {
       "teacher"
     )
 
-    const newPinned = !message.pinned
+    const newPinned = !(message.pinned ?? false)
     await messageRepository.update(messageId, { pinned: newPinned })
     return newPinned
   }
 
-  /**
-   * Add a reaction to a message.
-   */
   async addReaction(
     messageId: string,
     userId: string,
@@ -188,7 +174,6 @@ export class ChatService {
 
     await permissionService.requireMembership(channel.classId, userId)
 
-    // Check if user already reacted with this emoji
     const existing = await reactionRepository.getByMessageUserAndEmoji(
       messageId,
       userId,
@@ -207,12 +192,14 @@ export class ChatService {
     }
     await reactionRepository.create(reaction)
 
+    // Denormalize reactions onto the message document so the SSE stream
+    // (which listens to `messages`) picks up the change automatically.
+    const allReactions = await reactionRepository.getByMessage(messageId)
+    await messageRepository.update(messageId, { reactions: allReactions })
+
     return reaction
   }
 
-  /**
-   * Remove a reaction.
-   */
   async removeReaction(
     messageId: string,
     userId: string,
@@ -226,11 +213,13 @@ export class ChatService {
     if (!existing) throw new Error("Reaction not found")
 
     await reactionRepository.delete(existing.id)
+
+    // Sync denormalized reactions on the message document
+    const allReactions = await reactionRepository.getByMessage(messageId)
+    await messageRepository.update(messageId, { reactions: allReactions })
   }
 
-  /**
-   * Get messages for a channel (paginated, newest-first).
-   */
+ 
   async getMessages(
     channelId: string,
     userId: string,
@@ -245,9 +234,7 @@ export class ChatService {
     return messageRepository.getByChannel(channelId, limit, cursor)
   }
 
-  /**
-   * Get pinned messages for a channel.
-   */
+ 
   async getPinnedMessages(
     channelId: string,
     userId: string
@@ -259,10 +246,7 @@ export class ChatService {
 
     return messageRepository.getPinned(channelId)
   }
-
-  /**
-   * Get thread replies for a message.
-   */
+ 
   async getThread(messageId: string, userId: string): Promise<Message[]> {
     const message = await messageRepository.getById(messageId)
     if (!message) throw new Error("Message not found")

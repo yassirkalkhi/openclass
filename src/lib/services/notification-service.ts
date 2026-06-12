@@ -7,9 +7,7 @@ const notificationRepository = new NotificationRepository()
 const classMemberRepository = new ClassMemberRepository()
 
 export class NotificationService {
-  /**
-   * Create a notification for a user.
-   */
+ 
   async createNotification(
     data: Pick<Notification, "userId" | "type" | "title"> & {
       content?: string
@@ -33,9 +31,7 @@ export class NotificationService {
     return notification
   }
 
-  /**
-   * Send a notification to all members of a class.
-   */
+ 
   async notifyClassMembers(
     classId: string,
     data: Pick<Notification, "type" | "title"> & {
@@ -63,9 +59,7 @@ export class NotificationService {
     }
   }
 
-  /**
-   * Notify all students in a class (excludes teachers/owners unless they're also students).
-   */
+   
   async notifyClassStudents(
     classId: string,
     data: Pick<Notification, "type" | "title"> & {
@@ -92,20 +86,14 @@ export class NotificationService {
       await notificationRepository.batchCreate(notifications)
     }
   }
-
-  /**
-   * Get notifications for a user.
-   */
+ 
   async getNotifications(
     userId: string,
     unreadOnly: boolean = false
   ): Promise<Notification[]> {
     return notificationRepository.getByUser(userId, unreadOnly)
   }
-
-  /**
-   * Get paginated notifications.
-   */
+ 
   async getNotificationsPaginated(
     userId: string,
     limit: number = 20,
@@ -113,10 +101,7 @@ export class NotificationService {
   ): Promise<{ items: Notification[]; nextCursor: string | null }> {
     return notificationRepository.getByUserPaginated(userId, limit, cursor)
   }
-
-  /**
-   * Mark a notification as read.
-   */
+ 
   async markRead(id: string, userId: string): Promise<void> {
     const notification = await notificationRepository.getById(id)
     if (!notification) throw new Error("Notification not found")
@@ -128,23 +113,17 @@ export class NotificationService {
     await notificationRepository.markRead(id)
   }
 
-  /**
-   * Mark all notifications as read for a user.
-   */
+   
   async markAllRead(userId: string): Promise<void> {
     await notificationRepository.markAllRead(userId)
   }
 
-  /**
-   * Get unread notification count.
-   */
+  
   async getUnreadCount(userId: string): Promise<number> {
     return notificationRepository.getUnreadCount(userId)
   }
 
-  /**
-   * Delete a notification.
-   */
+   
   async deleteNotification(id: string, userId: string): Promise<void> {
     const notification = await notificationRepository.getById(id)
     if (!notification) throw new Error("Notification not found")

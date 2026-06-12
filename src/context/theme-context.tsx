@@ -10,9 +10,7 @@ type ThemeContextType = {
 }
 
 const ThemeContext = createContext<ThemeContextType | null>(null)
-
-// Read theme from the DOM synchronously so it matches what the inline
-// <script> in <head> already applied — avoids a hydration mismatch.
+ 
 function getInitialTheme(): Theme {
     if (typeof window === 'undefined') return 'light'
     return document.documentElement.classList.contains('dark') ? 'dark' : 'light'
@@ -22,11 +20,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const [theme, setTheme] = useState<Theme>(getInitialTheme)
 
     useEffect(() => {
-        // Keep localStorage in sync if it was never written yet
-        if (!localStorage.getItem('theme')) {
+         if (!localStorage.getItem('theme')) {
             localStorage.setItem('theme', theme)
         }
-    }, []) // eslint-disable-line react-hooks/exhaustive-deps
+    }, [])  
 
     const toggleTheme = () => {
         const nextTheme = theme === 'light' ? 'dark' : 'light'

@@ -2,9 +2,7 @@ import { type Locale, defaultLocale } from "./locales"
 
 export const LOCALE_COOKIE_NAME = "NEXT_LOCALE"
 
-/**
- * Get locale from cookie (client-side)
- */
+ 
 export function getLocaleFromCookie(): Locale {
   if (typeof document === "undefined") {
     return defaultLocale
@@ -22,23 +20,16 @@ export function getLocaleFromCookie(): Locale {
 
   return defaultLocale
 }
-
-/**
- * Set locale cookie (client-side)
- */
+ 
 export function setLocaleCookie(locale: Locale): void {
   if (typeof document === "undefined") {
     return
   }
 
-  // Set cookie for 1 year
-  const maxAge = 365 * 24 * 60 * 60
+   const maxAge = 365 * 24 * 60 * 60
   document.cookie = `${LOCALE_COOKIE_NAME}=${locale}; path=/; max-age=${maxAge}; SameSite=Lax`
 }
-
-/**
- * Get locale from cookie header (server-side)
- */
+ 
 export function getLocaleFromCookieHeader(cookieHeader: string | null): Locale {
   if (!cookieHeader) {
     return defaultLocale

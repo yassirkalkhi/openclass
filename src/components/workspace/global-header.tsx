@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Search, LogOut, Building2, Settings, Mail } from "lucide-react"
+import { Search, LogOut, Building2, Settings, Mail, User } from "lucide-react"
 import { OpenClassLogo } from "@/components/ui/openclass-logo"
 import { HeaderAlertsMenu } from "@/components/workspace/header-alerts-menu"
 import { useAuth } from "@/context/auth-context"
@@ -81,6 +81,10 @@ export function GlobalHeader() {
             <div className="text-xs font-normal text-muted-foreground">{user?.email}</div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => router.push("/app/profile")}>
+            <User className="size-4" />
+            {t.nav.profile}
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={() => router.push("/organizations")}>
             <Building2 className="size-4" />
             {t.nav.organizations}

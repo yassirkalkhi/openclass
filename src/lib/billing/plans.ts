@@ -1,7 +1,4 @@
-/**
- * Billing plan definitions — safe to import in both client and server code.
- * Keep this file free of any server-only imports (firebase-admin, etc.).
- */
+ 
 
 export const BILLING_PLANS = {
   BASE: {

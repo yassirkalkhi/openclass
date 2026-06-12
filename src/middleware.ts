@@ -5,7 +5,7 @@ import { jwtVerify } from "jose"
 const authSecret = process.env.AUTH_SECRET
 const secret = authSecret ? new TextEncoder().encode(authSecret) : null
 
-const publicRoutes = ["/login", "/register", "/temp-create-user"]
+const publicRoutes = ["/", "/login", "/register", "/temp-create-user"]
 
 function getPostAuthRedirect(payload: {
   activeOrganizationId?: string

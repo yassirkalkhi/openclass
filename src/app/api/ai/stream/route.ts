@@ -10,8 +10,7 @@ export async function POST(request: NextRequest) {
     const userId = await getActionUserId()
     const orgId = await getActionOrgId()
 
-    // Guard: AI feature must be enabled
-    const { hasAccess, reason } = await BillingMiddleware.requireAIAccess(orgId)
+     const { hasAccess, reason } = await BillingMiddleware.requireAIAccess(orgId)
     if (!hasAccess) {
       return new Response(
         JSON.stringify({ error: "billing_locked", reason }),

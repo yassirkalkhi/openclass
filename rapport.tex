@@ -1,0 +1,2028 @@
+% ============================================================
+%  RAPPORT DE STAGE DE FIN D'ÉTUDES — OpenClass
+%  Brain Skills — Maroc
+%  Format PFE marocain — Times New Roman, normes académiques
+% ============================================================
+
+\documentclass[12pt, a4paper, twoside]{report}
+
+% ── Encodage et langue ──────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{csquotes}
+
+% ── Police Times New Roman ──────────────────────────────────
+\usepackage{mathptmx}
+\usepackage[scaled=0.90]{helvet}
+\usepackage{courier}
+
+% ── Mise en page ────────────────────────────────────────────
+\usepackage[
+  top=2.5cm, bottom=2.5cm,
+  left=3cm,  right=2.5cm,
+  headheight=15pt
+]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage{float}
+ 
+
+% ── Titres de chapitres ─────────────────────────────────────
+\usepackage{titlesec}
+\titleformat{\chapter}[display]
+  {\normalfont\Large\bfseries\centering}
+  {\chaptertitlename\ \thechapter}{8pt}{\LARGE}
+\titlespacing*{\chapter}{0pt}{20pt}{10pt}
+
+\titleformat{\section}
+  {\normalfont\large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}
+  {\normalfont\normalsize\bfseries}{\thesubsection}{0.5em}{}
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\itshape}{\thesubsubsection}{0.5em}{}
+
+% ── Table des matières ──────────────────────────────────────
+\usepackage{tocloft}
+\setlength{\cftbeforechapskip}{3pt}
+
+% ── Figures et tableaux ─────────────────────────────────────
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\captionsetup{font=small, labelfont=bf}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage[most]{tcolorbox}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\definecolor{codebg}{RGB}{252,252,253}
+\definecolor{bordercolor}{RGB}{225,225,225}
+\definecolor{keyword}{RGB}{0,92,197}
+\definecolor{comment}{RGB}{0,140,0}
+\definecolor{string}{RGB}{180,40,40}
+\definecolor{textcolor}{RGB}{30,30,30}
+
+\lstdefinestyle{codesnapstyle}{
+  basicstyle=\ttfamily\scriptsize\color{textcolor},
+  keywordstyle=\color{keyword}\bfseries,
+  commentstyle=\color{comment}\itshape,
+  stringstyle=\color{string},
+  showstringspaces=false,
+  breaklines=true,
+  breakatwhitespace=true,
+  numbers=none,
+  columns=fullflexible,
+  keepspaces=true,
+  language=TypeScript
+}
+
+% ── codesnap: tcolorbox with caption support ────────────────
+\newtcblisting[auto counter, number within=chapter,
+  list inside=lol]{codesnap}[2][]{%
+  listing engine=listings,
+  listing only,
+  colback=codebg,
+  colframe=bordercolor,
+  boxrule=0.6pt,
+  arc=2mm,
+  enhanced,
+  left=6pt,
+  right=6pt,
+  top=6pt,
+  bottom=6pt,
+  drop shadow=black!5,
+  listing options={style=codesnapstyle, language=#1},
+  title={\small\textbf{#2}}
+}
+
+% ── Hyperliens ──────────────────────────────────────────────
+\usepackage[
+  colorlinks=true,
+  linkcolor=black,
+  citecolor=black,
+  urlcolor=blue,
+  bookmarks=true,
+  pdftitle={Rapport PFE — OpenClass},
+  pdfauthor={Stagiaire Brain Skills}
+]{hyperref}
+
+% ── Listes ──────────────────────────────────────────────────
+\usepackage{enumitem}
+\setlist[itemize]{noitemsep, topsep=4pt, label=$\bullet$}
+\setlist[enumerate]{noitemsep, topsep=4pt}
+
+% ── Divers ──────────────────────────────────────────────────
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{pifont}
+\newcommand{\cmark}{\ding{51}}
+\newcommand{\xmark}{\ding{55}}
+\usepackage{lscape}
+\usepackage{pdflscape}
+\usepackage{microtype}
+\usepackage{parskip}
+\setlength{\parskip}{6pt}
+\setlength{\parindent}{0pt}
+
+% ── Commandes figures vides ──────────────────────────────────
+\newcommand{\screenshottbd}[2][0.85\textwidth]{%
+  \begin{figure}[H]
+    \centering
+    \fbox{\parbox{#1}{\centering\vspace{2cm}
+      \textit{\textbf{[Capture d'écran à insérer]}\\[4pt]#2}
+      \vspace{2cm}}}
+    \caption{#2}
+    \label{fig:#2}
+  \end{figure}
+}
+
+\newcommand{\diagramtbd}[2][0.85\textwidth]{%
+  \begin{figure}[H]
+    \centering
+    \fbox{\parbox{#1}{\centering\vspace{2cm}
+      \textit{\textbf{[Diagramme à insérer]}\\[4pt]#2}
+      \vspace{2cm}}}
+    \caption{#2}
+    \label{fig:diag:#2}
+  \end{figure}
+}
+
+% ── Numérotation continue ────────────────────────────────────
+\usepackage{chngcntr}
+\counterwithin{figure}{chapter}
+\counterwithin{table}{chapter}
+
+% ============================================================
+\begin{document}
+
+\pagenumbering{roman}
+\setcounter{page}{1}
+
+\tableofcontents
+\clearpage
+
+\listoffigures
+\addcontentsline{toc}{chapter}{Liste des figures}
+\clearpage
+
+\listoftables
+\addcontentsline{toc}{chapter}{Liste des tableaux}
+\clearpage
+
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+% ============================================================
+%  CHAPITRE 1 — INTRODUCTION GÉNÉRALE
+% ============================================================
+\chapter{Introduction Générale}
+
+\section{Contexte du Projet}
+
+L'enseignement à distance et hybride est devenu une nécessité dans le paysage
+éducatif moderne, particulièrement depuis la pandémie de COVID-19. Les institutions
+éducatives font face à plusieurs défis majeurs dans la mise en place de solutions
+d'apprentissage en ligne efficaces.
+
+Le secteur de l'éducation numérique (EdTech) connaît une croissance exponentielle.
+Selon les estimations du cabinet HolonIQ, le marché mondial est évalué à plus de
+250 milliards de dollars en 2025, avec un taux de croissance annuel de l'ordre de
+16 à 20\,\%. Les solutions existantes présentent cependant des limitations
+importantes : la fragmentation des outils contraint enseignants et étudiants à
+jongler entre plusieurs plateformes (Zoom pour la vidéo, Slack pour la
+communication, Google Classroom pour les devoirs, etc.). De plus, les plateformes
+actuelles adoptent une approche \textit{one-size-fits-all} qui ne s'adapte pas aux
+besoins individuels des apprenants. Peu de solutions intègrent l'intelligence
+artificielle pour assister l'apprentissage de manière contextuelle, et les
+documents pédagogiques restent souvent dispersés et difficiles à retrouver.
+
+C'est dans ce contexte que s'inscrit le projet \textbf{OpenClass}, développé au
+sein de l'entreprise \textbf{Brain Skills}, spécialisée dans l'éducation et la
+formation.
+
+\section{Problématique}
+
+La question centrale de ce projet est la suivante : comment créer une plateforme
+unifiée qui combine communication en temps réel, gestion de contenu pédagogique et
+assistance par intelligence artificielle pour améliorer l'expérience d'apprentissage
+collaboratif~? Cette problématique soulève plusieurs sous-questions : comment
+centraliser tous les outils nécessaires à l'apprentissage en ligne dans une seule
+plateforme~? Comment utiliser l'IA pour personnaliser l'expérience de chaque
+étudiant~? Comment rendre les ressources pédagogiques facilement accessibles et
+recherchables~? Comment faciliter la collaboration en temps réel entre enseignants
+et étudiants~? Et enfin, comment assurer la sécurité et la confidentialité des
+données éducatives~?
+
+\section{Objectifs du Projet}
+
+\subsection{Objectifs Principaux}
+
+\begin{enumerate}
+  \item \textbf{Unification} : créer une plateforme tout-en-un pour l'apprentissage
+        collaboratif, éliminant le besoin de jongler entre plusieurs outils.
+  \item \textbf{Personnalisation} : offrir une expérience d'apprentissage adaptée
+        à chaque étudiant grâce à l'intelligence artificielle.
+  \item \textbf{Collaboration} : faciliter l'interaction en temps réel entre tous
+        les acteurs (enseignants, étudiants, administrateurs).
+  \item \textbf{Accessibilité} : rendre les ressources pédagogiques facilement
+        recherchables grâce à l'indexation sémantique.
+  \item \textbf{Scalabilité} : supporter plusieurs organisations avec des milliers
+        d'utilisateurs simultanés.
+\end{enumerate}
+
+\subsection{Objectifs Techniques}
+
+Sur le plan technique, le projet vise à développer une architecture moderne basée
+sur Next.js~16 avec App Router, à implémenter un système de permissions granulaire
+et sécurisé, et à intégrer l'intelligence artificielle avec RAG
+(\textit{Retrieval-Augmented Generation}). La communication en temps réel est
+assurée par LiveKit pour la vidéoconférence, complétée par l'indexation vectorielle
+pour la recherche sémantique dans les documents. L'ensemble repose sur une
+architecture multi-tenant avec isolation complète des données.
+
+\subsection{Objectifs Fonctionnels}
+
+Les fonctionnalités cibles comprennent la gestion complète des organisations et
+des classes, un système de chat textuel avec canaux organisés, la vidéoconférence
+intégrée, la gestion des devoirs (création, soumission, correction), une
+bibliothèque de ressources avec indexation automatique, un assistant IA personnalisé
+par étudiant, ainsi qu'un système de notifications en temps réel et de gestion des
+invitations.
+
+\section{Périmètre de l'Application}
+
+\subsection{Utilisateurs Cibles}
+
+La plateforme  s'adresse à trois catégories d'utilisateurs. Les
+\textbf{enseignants} regroupent les professeurs d'université, les enseignants de
+lycée et collège, les formateurs en entreprise et les tuteurs privés. Les
+\textbf{étudiants} incluent les étudiants universitaires, les élèves du secondaire,
+les apprenants  et les participants à des cours en ligne.
+Enfin, les \textbf{administrateurs} couvrent les directeurs d'établissements, les
+responsables pédagogiques et les gestionnaires de formation.
+
+\subsection{Fonctionnalités Couvertes}
+
+\begin{table}[H]
+  
+  \begin{tabularx}{\textwidth}{|X|c|}
+    \hline
+    \textbf{Fonctionnalité} & \textbf{Statut} \\
+    \hline
+    Authentification et gestion des utilisateurs & \cmark \\
+    Gestion multi-tenant (organisations)         & \cmark \\
+    Création et gestion de classes               & \cmark \\
+    Communication textuelle (chat)               & \cmark \\
+    Vidéoconférence                 & \cmark \\
+    Gestion des devoirs et soumissions           & \cmark \\
+    Bibliothèque de ressources                   & \cmark \\
+    Assistant IA avec RAG                        & \cmark \\
+    Notifications en temps réel                  & \cmark \\
+    Système de permissions                       & \cmark \\
+    Monétisation et abonnements          & \cmark \\
+    \hline
+  \end{tabularx}
+  \label{tab:features}
+  \caption{Fonctionnalités couvertes par OpenClass}
+\end{table}
+
+\section{Méthodologie Utilisée}
+
+\subsection{Approche de Développement}
+
+Le projet a été développé en suivant une \textbf{méthodologie Agile} avec des
+sprints de deux semaines. Cette approche itérative a permis des livraisons
+fréquentes de fonctionnalités, une adaptation rapide aux changements de besoins,
+des tests continus tout au long du développement et une collaboration étroite avec
+l'encadrant.
+
+\subsection{Phases du Projet}
+
+Le projet s'est déroulé en sept phases successives. La première phase, consacrée
+à l'analyse et à la conception (2 semaines), a couvert l'étude de l'existant,
+la définition des besoins et la modélisation de la base de données. La deuxième
+phase (3 semaines) a été dédiée au développement du cœur applicatif : authentification
+email/mot de passe et Google OAuth, gestion des organisations et du système de
+permissions. Les phases trois et quatre (2 semaines chacune) ont porté
+respectivement sur les fonctionnalités de communication (chat, vidéoconférence,
+notifications) et sur la gestion pédagogique (devoirs, ressources, invitations).
+La cinquième phase (2 semaines) a traité l'intelligence artificielle, avec
+l'extraction PDF, l'intégration Upstash Vector et le RAG via Groq/Llama~3.1~8B.
+La sixième phase (1 semaine) a intégré le système de monétisation Polar. Enfin,
+la septième phase (2 semaines) a couvert les tests, le déploiement sur Vercel et
+la documentation.
+
+ 
+
+% ============================================================
+%  CHAPITRE 2 — L'ENTREPRISE ET SON SECTEUR D'ACTIVITÉ
+% ============================================================
+\chapter{L'Entreprise et son Secteur d'Activité}
+
+\section{Présentation de Brain Skills}
+
+Brain Skills est une société à responsabilité limitée à associé unique (SARL~AU)
+fondée le 18 avril 2016, dotée d'un capital social de 100\,000 DHS. Son siège
+social est établi au boulevard Moulay Idriss~1\ier, immeuble Chaiba, appartement
+n°1, à Safi. L'entreprise est joignable au +212~696-098343 ou par courriel à
+l'adresse brainskills.abc@gmail.com.
+
+Spécialisée dans l'éducation et la formation, Brain Skills développe ses activités
+autour de plusieurs axes complémentaires : la robotique et l'informatique,
+l'organisation d'événements scolaires, l'enseignement des langues, les cours
+particuliers toutes matières, l'aide aux devoirs ainsi que la méthodologie et
+l'organisation scolaire.
+
+\section{Secteur d'Activité : l'EdTech au Maroc}
+
+\subsection{Le Marché de l'EdTech}
+
+Le secteur de la technologie éducative (EdTech) connaît une croissance rapide au
+Maroc et dans le monde. Selon les rapports HolonIQ et de l'OCDE (2024), le marché
+mondial de l'EdTech est évalué à plus de 250 milliards USD en 2025, avec un taux
+de croissance annuel compris entre 16 et 20\,\%. Le marché africain dépasse quant
+à lui les 3 milliards USD, tandis que le taux de pénétration d'internet au Maroc
+atteint 88\,\%.
+
+Les principaux facteurs de croissance sont la digitalisation accélérée
+post-COVID, les investissements gouvernementaux dans l'éducation numérique, la
+démocratisation des smartphones et d'internet, et le besoin croissant de
+formation continue.
+
+\subsection{Positionnement de Brain Skills}
+
+Brain Skills se positionne comme un acteur innovant dans l'écosystème EdTech
+marocain. Sa connaissance approfondie du marché local, son approche multimodale
+combinant présentiel et distanciel, son focus sur les compétences du
+21\ieme{} siècle (codage, robotique) et la qualité de son équipe pédagogique
+constituent ses principaux atouts. Les opportunités identifiées portent sur
+l'expansion vers d'autres villes marocaines, le développement de partenariats avec
+des établissements scolaires et la création de contenus numériques certifiants.
+
+\section{Motivation du Projet OpenClass}
+
+Brain Skills a identifié plusieurs besoins non satisfaits dans son activité
+quotidienne. L'absence de plateforme unifiée contraignait les équipes à recourir
+à de multiples outils dispersés pour assurer les cours en ligne. Le suivi
+personnalisé de la progression individuelle de chaque apprenant s'avérait difficile
+à mettre en œuvre, et les documents pédagogiques restaient difficiles à organiser
+et à retrouver. Par ailleurs, le manque d'outils de collaboration en temps réel
+limitait les interactions entre enseignants et étudiants, et l'impossibilité de
+répondre aux questions en dehors des heures de cours constituait un frein à
+l'apprentissage autonome.
+
+Le projet OpenClass répond directement à l'ensemble de ces besoins en proposant
+une solution complète et intégrée.
+
+% ============================================================
+%  CHAPITRE 3 — CAHIER DES CHARGES
+% ============================================================
+\chapter{Cahier des Charges}
+
+\section{Exigences Fonctionnelles}
+
+\subsection{Gestion des Utilisateurs et Authentification}
+
+L'utilisateur peut s'inscrire avec un email et un mot de passe ou se connecter
+via Google OAuth. Le système valide l'unicité de l'email et hache le mot de passe
+à l'aide d'Argon2id. Une fois authentifié, l'utilisateur peut modifier son profil
+(nom, avatar, bio), changer son mot de passe et consulter son historique d'activité.
+
+\subsection{Gestion des Organisations}
+
+Un utilisateur peut créer une organisation et en devient automatiquement
+propriétaire (\textit{owner}). Chaque organisation possède un \textit{slug}
+unique et peut être de type école, université, académie ou entreprise. Le
+propriétaire invite des membres via un code à 8~caractères, peut leur attribuer
+les rôles \texttt{owner} ou \texttt{member}, et les promouvoir ou rétrograder
+selon les besoins.
+
+\subsection{Gestion des Classes}
+
+Les propriétaires d'organisation créent des classes identifiées par un slug
+unique. La création d'une classe génère automatiquement des canaux par défaut
+(\texttt{\#general}, \texttt{\#announcements}). Les membres sont invités par code
+ou directement, et se voient attribuer un rôle de \texttt{teacher} (enseignant)
+ou de \texttt{student} (étudiant) : les enseignants peuvent gérer la classe tandis
+que les étudiants disposent de permissions limitées.
+
+\subsection{Communication}
+
+Le chat textuel permet l'envoi de messages dans les canaux avec pièces jointes,
+ainsi que l'édition et la suppression de messages. La vidéoconférence, alimentée
+par LiveKit, est intégrée directement dans les canaux dédiés et supporte
+l'audio/vidéo en temps réel, le partage d'écran et jusqu'à 50~participants. Le
+système de notifications couvre les nouveaux messages, annonces, invitations et
+devoirs.
+
+\subsection{Gestion Pédagogique}
+
+Les enseignants créent des devoirs avec date limite et score maximum. Les étudiants
+soumettent leurs travaux avec support des brouillons, et les soumissions tardives
+sont gérées de manière configurable. Les ressources pédagogiques (PDF, images,
+documents) sont organisées par chapitres et téléchargeables. Les fichiers PDF et
+texte sont automatiquement indexés pour la recherche sémantique.
+
+\subsection{Monétisation et Facturation}
+
+La plateforme intègre un système complet de monétisation par abonnements. Les
+exigences détaillées sont présentées dans la section~\ref{sec:monetisation},
+consacrée aux fonctionnalités de facturation.
+
+\subsection{Assistant IA}
+
+L'assistant IA propose une conversation par étudiant avec accès aux ressources de
+la classe via le pattern RAG. Les réponses sont contextuelles, basées sur les
+cours, et citent leurs sources. Elles sont diffusées via Server-Sent Events. Le
+système sauvegarde l'historique complet des conversations en base de données.
+
+\section{Exigences Non-Fonctionnelles}
+
+\subsection{Performance}
+Les objectifs de performance de la plateforme ont été définis afin de garantir une expérience utilisateur fluide et réactive. Le temps de chargement des pages doit rester inférieur à \textbf{2~s}, les réponses des API inférieures à \textbf{500~ms} et la première réponse IA doit être affichée en moins de \textbf{1~s} grâce au streaming. L'architecture vise également à supporter plus de \textbf{10,000 utilisateurs simultanés} tout en maintenant un taux de disponibilité de \textbf{99,9\%}.
+
+\subsection{Sécurité}
+
+La sécurité de la plateforme repose sur le hachage des mots de passe avec Argon2id,
+des JWT tokens avec expiration stockés dans des cookies HTTP-only et Secure, et le
+support OAuth~2.0. Les permissions sont vérifiées à chaque requête et les données
+sont isolées par organisation via un système RBAC. Le chiffrement est assuré en
+transit (HTTPS) et au repos, dans le respect de la conformité RGPD.
+
+\subsection{Utilisabilité et Maintenabilité}
+
+Le design est responsive (mobile, tablette, bureau) et respecte le niveau AA des
+WCAG~2.1. La plateforme supporte le français, l'anglais et l'arabe, et offre une
+navigation fluide avec retour visuel immédiat. Sur le plan technique, la base de
+code est entièrement typée en TypeScript, documentée, et le déploiement s'effectue
+sans interruption avec possibilité de \textit{rollback} rapide.
+
+\section{Rôles Utilisateurs}
+
+\subsection{Administrateur Plateforme}
+
+L'administrateur plateforme dispose d'un accès à toutes les organisations, à la
+gestion des utilisateurs, au monitoring système et à la configuration globale.
+
+\subsection{Propriétaire d'Organisation (Owner)}
+
+Le propriétaire dispose de permissions exclusives : \textit{manage\_organization}
+pour configurer l'organisation, \textit{manage\_class} pour créer, modifier et
+archiver des classes, et \textit{manage\_roles} pour assigner des rôles aux
+membres. Il dispose également de toutes les permissions des enseignants et
+étudiants, gère l'abonnement et la facturation, et peut modifier les
+\textit{overrides} de permissions par classe.
+
+\subsection{Membre d'Organisation}
+
+Un membre peut consulter les classes auxquelles il appartient, rejoindre des
+classes par invitation ou code, et se voir attribuer un rôle dans chaque classe
+(\texttt{teacher} ou \texttt{student}).
+
+\subsection{Enseignants et Étudiants}
+
+\begin{table}[H]
+
+  \begin{tabularx}{\textwidth}{|X|c|c|}
+    \hline
+    \textbf{Permission} & \textbf{Teacher} & \textbf{Student} \\
+    \hline
+    \text{manage\_organization} & \xmark & \xmark \\
+    \text{manage\_class}        & \xmark & \xmark \\
+    \text{manage\_roles}        & \xmark & \xmark \\
+    \text{send\_messages}       & \cmark & \cmark \\
+    \text{upload\_files}        & \cmark & \cmark \\
+    \text{join\_voice}          & \cmark & \cmark \\
+    \text{join\_video}          & \cmark & \cmark \\
+    \text{use\_ai}              & \cmark & \cmark \\
+    \hline
+  \end{tabularx}
+  \label{tab:permissions}
+    \caption{Permissions des enseignants et étudiants}
+\end{table}
+
+Les enseignants et les étudiants partagent les mêmes permissions par défaut. La
+différenciation des rôles s'opère au niveau applicatif (création de devoirs,
+correction, gestion des canaux). Le propriétaire peut modifier ces permissions par
+classe via le système d'overrides.
+ 
+\section{Cas d'Utilisation}
+
+\subsection{Diagramme de Cas d'Utilisation Global}
+
+ 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth,height=0.85\textheight]{UseCase.png}
+    \caption{Diagramme de cas d'utilisation global}
+    \label{fig:usecase}
+\end{figure}
+\subsection{Cas d'Utilisation Détaillés}
+
+\textbf{CU-01 : Créer un Devoir}
+
+Le cas d'utilisation « Créer un devoir » implique principalement l'acteur enseignant, qui doit être membre de la classe avec le rôle \textit{teacher} avant de pouvoir accéder à cette fonctionnalité. Le processus commence lorsque l'enseignant accède à la section « Devoirs » de la classe puis clique sur l'option « Créer un devoir », ce qui ouvre un formulaire dédié. L'enseignant renseigne alors les informations essentielles du devoir, notamment le titre, la description, la date limite ainsi que le score maximal attribué. Il peut également ajouter des pièces jointes afin de compléter les consignes. Ensuite, il configure les options supplémentaires comme l'autorisation des soumissions tardives. Après validation, le système enregistre le devoir, le rend accessible aux étudiants et déclenche une notification automatique.
+
+En cas de données invalides, le système affiche un message d'erreur et invite l'utilisateur à corriger les champs concernés. En cas d'erreur serveur, une notification est affichée et l'utilisateur est invité à réessayer ultérieurement. Une fois le processus terminé avec succès, le devoir devient visible pour tous les étudiants de la classe conformément aux permissions définies.
+
+\vspace{0.8em}
+
+\textbf{CU-02 : Utiliser l'Assistant IA}
+
+Le cas d'utilisation « Utiliser l'assistant IA » implique l'acteur étudiant. Pour accéder à cette fonctionnalité, l'étudiant doit être membre de la classe avec la permission \textit{use\_ai}, le module IA doit être activé au niveau de l'abonnement de l'organisation, et le paramètre \textit{allowAIAccess} doit être défini à \textit{true} dans la configuration de la classe.
+
+Le processus commence lorsque l'étudiant accède à l'assistant IA de la classe. Il peut ensuite sélectionner ou créer une conversation, puis poser une question en langage naturel. Le système vectorise la requête et interroge Upstash Vector afin de récupérer le contexte pertinent. Ce contexte est ensuite enrichi et envoyé au modèle Groq. La réponse est générée et diffusée en temps réel via Server-Sent Events (token par token). Une fois la génération terminée, les sources utilisées sont envoyées et la conversation complète est sauvegardée en base de données.
+
+En cas d'absence de documents indexés, le système répond en utilisant uniquement les capacités générales du modèle. En cas d'erreur lors de l'appel à l'API Groq, un message d'erreur est affiché à l'utilisateur. Après exécution réussie, la conversation ainsi que les sources restent consultables ultérieurement.
+
+% ============================================================
+%  CHAPITRE 4 — GESTION DE PROJET
+% ============================================================
+\chapter{Gestion de Projet}
+
+\section{Méthodologie Agile / Scrum}
+
+\subsection{Choix de la Méthodologie}
+
+Le projet OpenClass a été développé en suivant la méthodologie \textbf{Agile
+Scrum}, une approche itérative et incrémentale adaptée aux projets logiciels
+complexes. Ce choix repose sur plusieurs avantages structurants : la flexibilité
+que procure Scrum permet d'intégrer les changements sans remettre en cause
+l'ensemble du projet. Chaque sprint produit un incrément fonctionnel testable,
+assurant des livraisons fréquentes. Les cérémonies Scrum garantissent une
+communication régulière avec l'encadrant, tandis que les rétrospectives permettent
+une détection précoce des risques.
+
+\subsection{Cadre Scrum Appliqué}
+
+L'équipe projet était composée de trois rôles : l'encadrant Brain Skills assumait
+le rôle de Product Owner, tandis que le stagiaire-développeur cumulait les rôles
+de Scrum Master et de membre de l'équipe de développement.
+
+\subsection{Sprints et Backlog}
+
+Le projet a été découpé en \textbf{6~sprints de 2~semaines} couvrant
+12~semaines de développement.
+
+\begin{longtable}{|c|l|l|l|}
+  \caption{Planification des sprints}\label{tab:sprints}\\
+  \hline
+  \textbf{Sprint} & \textbf{Période} & \textbf{Objectif Principal} & \textbf{Fonctionnalités Livrées} \\
+  \hline
+  \endfirsthead
+  \multicolumn{4}{c}{\textit{Tableau~\ref{tab:sprints} (suite)}} \\
+  \hline
+  \textbf{Sprint} & \textbf{Période} & \textbf{Objectif Principal} & \textbf{Fonctionnalités Livrées} \\
+  \hline
+  \endhead
+  \hline
+  \endfoot
+  S1 & Sem.~1--2  & Analyse \& Auth Core   & Étude existant, BDD, auth \\
+  S2 & Sem.~3--4  & Organisations \& Classes & Orgs, membres, classes \\
+  S3 & Sem.~5--6  & Communication          & Messagerie, vidéoconférence \\
+  S4 & Sem.~7--8  & Gestion Pédagogique    & Devoirs, ressources \\
+  S5 & Sem.~9--10 & Intelligence Artificielle & Assistant AI, RAG \\
+  S6 & Sem.~11--12 & Monétisation \& Déploiement &  Abonnements, tests, Vercel \\
+
+\end{longtable}
+
+\subsection{Vélocité}
+\begin{table}[H]
+
+\centering
+\begin{tabularx}{\textwidth}{|X|X|X|X|}
+\hline
+\textbf{Sprint} & \textbf{Planifié} & \textbf{Réalisé} & \textbf{Taux} \\
+\hline
+S1 & 22  & 22  & 100\,\% \\
+S2 & 25  & 23  & 92\,\% \\
+S3 & 24  & 22  & 92\,\% \\
+S4 & 26  & 25  & 96\,\% \\
+S5 & 22  & 21  & 95\,\% \\
+S6 & 20  & 20  & 100\,\% \\
+\hline
+\textbf{Total} & \textbf{139} & \textbf{133} & \textbf{96\,\%} \\
+\hline
+\end{tabularx}
+\label{tab:velocity}
+\caption{Story points planifiés et réalisés par sprint}
+\end{table}
+
+Le taux de réalisation global de \textbf{96\,\%} est satisfaisant. Les 4\,\%
+restants correspondent à des fonctionnalités reportées, notamment l'application
+mobile native et les tableaux blancs collaboratifs.
+
+\section{Diagramme de Gantt}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Gantt chart.png}
+    \caption{Diagramme de Gantt — planification sur 12 semaines}
+    \label{fig:usecase}
+\end{figure}
+ 
+La durée totale du projet est de \textbf{12~semaines} (3~mois), du 16~mars 2026
+au 5~juin 2026.
+
+\section{Outils de Gestion de Projet}
+
+Les outils suivants ont été utilisés tout au long du développement du projet :
+
+\textbf{GitHub} : utilisé pour le contrôle de version, la gestion des branches feature et les pull requests.  
+\textbf{Excalidraw} : utilisé pour la conception des maquettes UI/UX et des prototypes interactifs.  \\
+\textbf{Postman} : utilisé pour tester et valider les API REST ainsi que les webhooks.  \\
+\textbf{VS Code} : environnement principal de développement du projet.  \\
+\textbf{Notion} : utilisé pour la documentation interne et la gestion des notes de sprint.\\
+
+\section{Gestion des Risques}
+
+\begin{table}[H]
+ 
+  \begin{tabularx}{\textwidth}{|X|l|l|p{5cm}|}
+    \hline
+    \textbf{Risque} & \textbf{Prob.} & \textbf{Impact} & \textbf{Mitigation} \\
+    \hline
+    Indisponibilité d'un service externe (Groq, LiveKit) & Moyenne & Élevé
+      & Gestion d'erreurs gracieuse, messages clairs \\
+    Dépassement du quota API Groq & Haute & Moyen
+      & Rate limiting côté serveur \\
+    Complexité du RAG sous-estimée & Haute & Élevé
+      & Sprint dédié, paramètres de chunking ajustables \\
+    Coûts Firebase dépassant le budget & Faible & Moyen
+      & Monitoring lectures/écritures, indexes optimisés \\
+    Délai de livraison & Moyenne & Élevé
+      & Priorisation MoSCoW, fonctionnalités reportées si nécessaire \\
+    \hline
+  \end{tabularx}
+   \caption{Matrice des risques du projet}
+  \label{tab:risks}
+\end{table}
+
+% ============================================================
+%  CHAPITRE 5 — ÉTUDE DE L'EXISTANT
+% ============================================================
+\chapter{Étude de l'Existant}
+
+\section{Solutions Existantes}
+
+\subsection{Google Classroom}
+
+Google Classroom est une plateforme gratuite de Google pour l'éducation proposant
+la création de classes, la distribution et la correction de devoirs, des annonces
+et l'intégration Google Drive. Son adoption est massive grâce à sa gratuité et à
+la simplicité de son interface. Cependant, elle ne dispose pas de chat en temps
+réel, ni de vidéoconférence intégrée, ni d'assistant IA, et la recherche dans les
+ressources reste limitée.
+
+\subsection{Microsoft Teams for Education}
+
+Microsoft Teams for Education est la plateforme de collaboration de Microsoft
+orientée enseignement. Elle offre une suite complète (chat, vidéoconférence,
+partage de fichiers, devoirs, intégration Office~365) et une sécurité de niveau
+entreprise. En revanche, son interface est jugée complexe, la courbe
+d'apprentissage est élevée, elle ne dispose pas d'IA personnalisée et son coût
+est élevé dans sa version complète.
+
+\subsection{Moodle}
+
+Moodle est un LMS (\textit{Learning Management System}) open-source très répandu
+proposant une gestion de cours riche, des quiz et évaluations, des forums de
+discussion et un suivi de progression. Sa grande extensibilité via des plugins en
+fait un choix flexible. Cependant, son interface est datée, sa configuration
+complexe et il ne dispose ni de vidéoconférence native ni d'IA intégrée. Il
+nécessite de surcroît un hébergement et une maintenance dédiés.
+
+\subsection{Discord (Usage Éducatif)}
+
+Discord, initialement conçu pour les joueurs, est parfois détourné pour un usage
+éducatif. Sa communication excellente (chat textuel et vocal), son interface
+moderne et sa gratuité attirent les jeunes. Néanmoins, il n'est pas conçu pour
+l'éducation : aucune gestion de devoirs, pas de ressources pédagogiques
+structurées, pas d'IA éducative et un manque de structure académique.
+
+\section{Analyse Comparative}
+
+\begin{table}[H]
+  
+  \begin{tabularx}{\textwidth}{|X|c|c|c|c|c|}
+    \hline
+    \textbf{Critère} & \textbf{G. Classroom} & \textbf{MS Teams}
+      & \textbf{Moodle} & \textbf{Discord} & \textbf{OpenClass} \\
+    \hline
+    Chat temps réel       & \xmark & \cmark & \xmark  & \cmark  & \cmark \\
+    Vidéoconférence       & Séparé & \cmark & Plugin  & \cmark  & \cmark \\
+    Devoirs               & \cmark & \cmark & \cmark  & \xmark  & \cmark \\
+    Assistant IA          & \xmark & Limité & \xmark  & Bots    & \cmark RAG \\
+    Recherche sémantique  & \xmark & \xmark & \xmark  & \xmark  & \cmark \\
+    Multi-tenant          & \xmark & \cmark & \cmark  & \cmark  & \cmark \\
+    Interface moderne     & \cmark & ~      & \xmark  & \cmark  & \cmark \\
+    Coût                  & Gratuit & Payant & Gratuit & Gratuit & Freemium \\
+    Monétisation intégrée & \xmark & \cmark & \xmark  & \xmark  & \cmark \\
+    \hline
+  \end{tabularx}
+  \caption{Comparaison des solutions existantes avec OpenClass}
+  \label{tab:comparison}
+\end{table}
+
+\section{Justification de la Solution OpenClass}
+
+L'analyse comparative met en évidence plusieurs innovations propres à OpenClass.
+Premièrement, l'intégration IA avancée basée sur le RAG constitue une différenciation
+majeure : aucune solution concurrente n'offre un assistant avec accès contextuel
+aux ressources de cours, des réponses personnalisées basées sur les documents
+pédagogiques et la citation des sources pour vérification. Deuxièmement, l'approche
+tout-en-un regroupe chat, vidéo, devoirs, ressources et IA au sein d'une expérience
+utilisateur cohérente, sans jonglage entre outils. Troisièmement, l'indexation
+vectorielle permet de retrouver l'information même sans mots-clés exacts. Enfin,
+l'architecture multi-tenant native assure une isolation complète des données et une
+scalabilité garantie.
+
+Les solutions existantes ne répondent pas non plus à des besoins structurels
+identifiés : l'assistance IA 24/7 basée sur les cours, la recherche intelligente
+dans de volumineuses bibliothèques de ressources, l'expérience unifiée éliminant
+la multiplicité des applications, la personnalisation par apprenant et les modalités
+de communication adaptées aux habitudes des jeunes apprenants.
+
+% ============================================================
+%  CHAPITRE 6 — CONCEPTION DU SYSTÈME
+% ============================================================
+\chapter{Conception du Système}
+
+\section{Architecture Système}
+
+\subsection{Architecture Globale}
+
+OpenClass adopte une \textbf{architecture monolithique modulaire} basée sur
+Next.js, avec une séparation claire en couches : présentation (React), API et
+Server Actions, services métier, repository d'accès aux données, et services
+externes.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth,height=0.43\textheight]{Architecture.png}
+    \caption{Architecture globale}
+    \label{fig:usecase}
+\end{figure}
+ 
+
+\subsection{Pattern MVC Adapté}
+OpenClass adopte un pattern MVC adapté à Next.js : le \textbf{modèle} regroupe entités, repositories et services, la \textbf{vue} correspond aux composants React et pages Next.js, et le \textbf{contrôleur} est assuré par les API Routes et Server Actions pour gérer les échanges entre interface et logique métier.
+\section{Diagrammes UML}
+\subsection{Diagramme de Classes}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth,height=0.75\textheight]{Class.png}
+    \caption{Diagramme de classes}
+    \label{fig:usecase}
+\end{figure}
+Le modèle objet regroupe les entités principales du système (Organization, Class, Channel, Message) ainsi que la gestion des devoirs et des échanges IA, avec une relation un-à-plusieurs pour les soumissions et une indexation via Upstash Vector.
+
+\subsection{Diagramme de Séquence : Soumission de Devoir}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth,height=0.35\textheight]{Sequence1.png}
+    \caption{Diagramme de séquence — Soumission d'un devoir}
+    \label{fig:usecase}
+\end{figure}
+\subsection{Diagramme de Séquence : RAG (Assistant IA)}
+ 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth,height=0.33\textheight]{Sequence2.png}
+    \caption{Diagramme de séquence — Workflow RAG (Assistant IA)}
+    \label{fig:usecase}
+\end{figure}
+Le workflow RAG consiste à vectoriser la question de l'étudiant, récupérer les chunks les plus pertinents via Upstash Vector, construire un contexte envoyé au LLM Groq, puis diffuser la réponse en streaming (SSE) avant de sauvegarder la conversation avec ses sources en base.
+
+\section{Conception de la Base de Données}
+
+\subsection{Choix de Firebase Firestore}
+Firebase Firestore a été choisi pour sa base NoSQL à schéma flexible, adaptée aux données évolutives d'une plateforme éducative. Il offre une synchronisation temps réel native via listeners, une scalabilité automatique et un SDK JavaScript complet facilitant le développement. Par comparaison, une base relationnelle telle que PostgreSQL  aurait été un choix valide pour des projets nécessitant des requêtes complexes, mais son provisionnement et sa gestion du temps réel auraient représenté une complexité supplémentaire non justifiée dans ce contexte.    
+\subsection{Modèle Entité-Relation}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth,height=0.6\textheight]{ER.png}
+    \caption{Modèle Entité-Relation}
+    \label{fig:usecase}
+\end{figure}
+ 
+
+\subsection{Collections Firebase Principales}
+
+Le modèle de données repose sur plusieurs collections Firestore, chacune représentant un domaine fonctionnel spécifique de la plateforme.
+
+La collection "profiles" contient un document par utilisateur et centralise les informations de base telles que l'email et les données d'authentification.
+
+Les organisations sont stockées dans "organizations", où chaque document représente une organisation avec son \textit{identifiant}, son \textit{slug} et son \textit{code} d'invitation. Les membres de ces organisations sont gérés via "orgMembers", une collection de liaison associant utilisateurs et organisations, tout en précisant leur rôle.
+
+Les classes pédagogiques sont représentées par "classes", tandis que leurs participants sont stockés dans "classMembers", permettant de gérer finement les rôles au sein de chaque classe.
+
+La communication est assurée par les collections "dchannels" et "messages". Les canaux définissent les espaces d'échange (texte, vidéo ou annonces), tandis que les messages contiennent le contenu et les éventuelles réactions des utilisateurs.
+
+Le système pédagogique inclut également la gestion des devoirs à travers "assignments", ainsi que les soumissions associées dans "submissions", qui enregistrent le contenu rendu, le statut et la note obtenue.
+
+Les ressources pédagogiques sont stockées dans "classResources", avec une indication sur leur indexation par l'IA. Les données textuelles découpées pour le traitement sémantique sont gérées par "embeddingChunks", où chaque chunk correspond à un fragment de contenu relié à une ressource.
+
+Enfin, les interactions avec l'intelligence artificielle sont conservées dans "aiConversations", permettant de garder un historique par utilisateur, tandis que les notifications système sont enregistrées dans "notifications", afin d'assurer le suivi des événements importants.
+
+% ============================================================
+%  CHAPITRE 7 — ARCHITECTURE TECHNIQUE
+% ============================================================
+\chapter{Architecture Technique}
+\section{Stack Technologique}
+\subsection{Frontend}
+
+Le frontend du projet repose sur un ensemble de technologies modernes et complémentaires. L'application est développée avec Next.js (version 16), qui fournit un framework React complet intégrant le routing via App Router ainsi que le rendu côté serveur (SSR) et la génération statique (SSG). L'interface utilisateur est construite avec React (version 19), une bibliothèque dédiée à la création de composants réactifs. Le typage statique est assuré par TypeScript (version 5), garantissant une meilleure robustesse du code et une réduction des erreurs à l'exécution.
+
+
+
+\begin{table}[H]
+ 
+  \begin{tabularx}{\textwidth}{|l|l|X|}
+    \hline
+    \textbf{Technologie} & \textbf{Version} & \textbf{Rôle} \\
+    \hline
+    Next.js            & 16   & Framework React, App Router, SSR/SSG \\
+    React              & 19   & Bibliothèque UI \\
+    TypeScript         & 5   & Typage statique \\
+    Tailwind CSS       &  4 & Styling utilitaire \\
+    Radix UI / shadcn  & Beta      & Composants accessibles \\
+    Framer Motion      & 12    & Animations \\
+    \hline
+  \end{tabularx} 
+  \caption{Technologies frontend}
+  \label{tab:frontend}
+\end{table}
+\newpage
+\subsection{Backend et Services Externes}
+
+\begin{table}[H]
+
+  \begin{tabularx}{\textwidth}{|l|l|X|}
+    \hline
+    \textbf{Technologie} & \textbf{Version} & \textbf{Rôle} \\
+    \hline
+    Next.js API Routes    & 16   & Endpoints HTTP \\
+    Server Actions        & --       & Mutations serveur \\
+    \hline
+  \end{tabularx}
+  \caption{Technologies backend}
+  \label{tab:backend}
+\end{table}
+
+\begin{table}[H]
+
+  \begin{tabularx}{\textwidth}{|l|l|X|}
+    \hline
+    \textbf{Service} & \textbf{Version SDK} & \textbf{Rôle} \\
+    \hline
+    Firebase Firestore & Admin 13.8.0 & Base de données NoSQL \\
+    Upstash Vector     & 1.2.3        & Base vectorielle, RAG \\
+    LiveKit Cloud      & --           & Infrastructure vidéo \\
+    UploadThing        & 7.3.0        & Stockage fichiers \\
+    Groq               & 1.2.0        & API LLM (Llama~3.1~8B) \\
+    Polar              & 0.47.1       & Paiements et abonnements SaaS \\
+    \hline
+  \end{tabularx}
+    \caption{Services cloud utilisés} 
+  \label{tab:services}
+\end{table}
+
+\subsection{Sécurité}
+
+Les bibliothèques de sécurité retenues sont Argon2 pour le hachage des
+mots de passe, Jose  pour la gestion des JWT, et Zod  pour la
+validation des schémas de données.
+
+\section{Indexation Vectorielle (RAG)}
+
+\subsection{Fonctionnement}
+
+L'indexation vectorielle repose sur Upstash Vector. Chaque chunk de document est
+stocké avec la structure suivante :
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth,height=0.2\textheight]{vectorchunk.png}
+    \caption{Modèle Entité-Relation}
+    \label{fig:usecase}
+\end{figure}
+
+\subsection{Paramètres Techniques}
+
+\begin{table}[H]
+  \caption{Paramètres de l'indexation vectorielle}
+  \begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Paramètre} & \textbf{Valeur} \\
+    \hline
+    Modèle d'embedding      & \textit{multilingual-e5-large}  \\
+    Dimensions du vecteur   & 1024 \\
+    Métrique de similarité  & Cosinus \\
+    Taille maximale d'un chunk & 1\,200 caractères \\
+    Nombre de résultats (topK) & 5 \\ 
+    Fichiers indexables     & PDF, Text, .md \\
+    \hline
+  \end{tabularx}
+  \label{tab:vector}
+\end{table}
+
+\section{Architecture de Déploiement}
+
+ 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth,height=0.3\textheight]{CloudArch.png}
+    \caption{Architecture de déploiement — Vercel + services cloud}
+    \label{fig:usecase}
+\end{figure}
+L'application est déployée sur \textbf{Vercel} avec les régions
+\texttt{cdg1}~(Paris) et \textit{iad1}~(Washington) pour une latence optimale.
+Les ressources statiques sont servies depuis le CDN Edge de Vercel tandis que les
+routes API et les Server Components sont exécutés en mode \textit{serverless}.
+
+\newpage
+\section{Structure du Projet}
+ 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth,height=0.7\textheight]{structure.png}
+    \caption{Structure de dossier openClass}
+    \label{fig:usecase}
+\end{figure}
+ 
+
+% ============================================================
+%  CHAPITRE 8 — RÉALISATION ET FONCTIONNALITÉS
+% ============================================================
+\chapter{Réalisation et Fonctionnalités de l'Application}
+
+\section{Environnement de Développement}
+
+Le développement a été réalisé sous Visual Studio Code avec Node.js~20~LTS comme
+environnement d'exécution et pnpm~8 comme gestionnaire de paquets. Git et GitHub
+ont assuré le contrôle de version, Postman les tests d'API et Chrome DevTools le
+débogage frontend. L'initialisation du projet s'est effectuée via la commande
+suivante :
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth,height=0.15\textheight]{startup.png}
+    \caption{Initialisation du projet Next.js}
+    \label{fig:usecase}
+\end{figure}
+ \newpage
+
+\section{Authentification et Profil}
+
+L'inscription supporte deux modes : formulaire email/mot de passe avec validation
+Zod côté serveur, et connexion Google OAuth.
+
+ 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth,height=0.3\textheight]{register.png}
+    \caption{Page d'inscription}
+    \label{fig:usecase}
+\end{figure}
+ 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth,height=0.4\textheight]{login.png}
+    \caption{Page de connexion avec options email et Google OAuth}
+    \label{fig:usecase}
+\end{figure}
+\section{Gestion des Organisations}
+
+La création d'une organisation génère automatiquement un code d'invitation à
+8~caractères et attribue au créateur le rôle \textit{owner}. Les membres peuvent
+ensuite être invités par code ou par invitation directe.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth,height=0.4\textheight]{orgs.png}
+    \caption{Formulaire de création d'organisation}
+    \label{fig:usecase}
+\end{figure}
+
+ 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth,height=0.35\textheight]{orgmembers.png}
+    \caption{Interface de gestion  d'organisation}
+    \label{fig:usecase}
+\end{figure}
+\section{Gestion des Classes}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth,height=0.3\textheight]{clasmembers.png}
+    \caption{Interface de gestion des classes}
+    \label{fig:usecase}
+\end{figure}
+ 
+ \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth,height=0.3\textheight]{manageclass.png}
+    \caption{Interface de configuration de classe}
+    \label{fig:usecase}
+\end{figure}
+ 
+\newpage
+\section{Communication}
+
+\subsection{Chat Textuel}
+
+Le chat supporte l'envoi de messages en temps réel, les réactions emoji, les pièces jointes,
+l'édition et la suppression de messages.
+ 
+ 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth,height=0.3\textheight]{chat.png}
+   \caption{Interface de chat avec canaux et messages}
+    \label{fig:usecase}
+\end{figure}
+\subsection{Vidéoconférence}
+
+La vidéoconférence est intégrée directement dans les canaux de type
+\texttt{video}, alimentée par LiveKit. Elle supporte audio/vidéo HD, partage
+d'écran, liste des participants et contrôles individuels.
+
+ 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth,height=0.3\textheight]{videoconferenece.png}
+   \caption{Interface de vidéoconférence}
+    \label{fig:usecase}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth,height=0.3\textheight]{notification.png}
+    \caption{Alerts (messages, devoirs, invitations)}
+    \label{fig:usecase}
+\end{figure} 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth,height=0.3\textheight]{alerts.png}
+    \caption{Centre de notifications  }
+    \label{fig:usecase}
+\end{figure}  
+
+\section{Gestion Pédagogique}
+
+\subsection{Devoirs}
+
+La vue enseignant permet la création de devoirs, la consultation d'une liste avec
+statistiques de soumission, la correction et l'attribution de scores et feedbacks.
+La vue étudiant propose la liste des devoirs (à faire, soumis, corrigés), le
+formulaire de soumission avec brouillons automatiques et la consultation des notes.
+
+ 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth,height=0.23\textheight]{devoirs-teacher.png}
+    \caption{Page de devoirs — vue enseignant }
+    \label{fig:usecase}
+\end{figure} 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth,height=0.3\textheight]{create-devoirs-teacher.png}
+    \caption{Page de devoir — vue enseignant }
+    \label{fig:usecase}
+\end{figure} 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth,height=0.3\textheight]{devoir-student.png}
+    \caption{Page de devoirs — vue étudiant}
+    \label{fig:usecase}
+\end{figure} 
+ 
+
+\subsection{Bibliothèque de Ressources}
+
+La bibliothèque supporte l'upload de fichiers (PDF, images, documents),
+l'organisation par chapitres, la prévisualisation, le téléchargement et
+l'indexation IA automatique à l'upload.
+
+ 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth,height=0.28\textheight]{ressources.png}
+    \caption{Bibliothèque de ressources avec chapitres}
+    \label{fig:usecase}
+\end{figure} 
+ 
+\section{Assistant IA}
+
+L'interface de l'assistant IA propose des conversations multiples avec streaming
+des réponses, citation des sources, historique complet et gestion des
+conversations. Lorsqu'un enseignant uploade un PDF, le service d'indexation
+extrait le texte, le découpe en chunks de 1\,200~caractères maximum et les stocke
+dans le namespace Upstash Vector de la classe. Lors d'une question de l'étudiant,
+les 5~chunks les plus pertinents sont récupérés pour construire le prompt
+contextuel envoyé à Groq.
+ 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth,height=0.29\textheight]{Ai.png}
+    \caption{Interface assistant IA — conversation avec sources}
+    \label{fig:usecase}
+\end{figure} 
+ 
+ 
+
+\section{Monétisation et Facturation}
+\label{sec:monetisation}
+
+\subsection{Modèle de Tarification}
+
+OpenClass adopte un modèle \textbf{freemium modulaire} basé sur des abonnements
+mensuels par organisation.
+
+\begin{table}[H]
+  \begin{tabularx}{\textwidth}{|l|r|X|}
+    \hline
+    \textbf{Plan} & \textbf{Coût mensuel} & \textbf{Fonctionnalités incluses} \\
+    \hline
+    Base               & 200 DH  & Classes, canaux, messagerie, devoirs, ressources \\
+    + Module Vidéo     & +150 DH & Vidéoconférence  \\
+    + Module IA        & +150 DH & Assistant IA avec RAG \\
+    Base + Vidéo + IA  & 500 DH  & Toutes les fonctionnalités \\
+    \hline
+  \end{tabularx}
+    \caption{Plans d'abonnement OpenClass}
+
+  \label{tab:pricing}
+\end{table}
+
+\subsection{Intégration Polar}
+
+\textbf{Polar} est la plateforme de paiement retenue pour gérer les abonnements.
+C'est une solution moderne orientée développeurs SaaS. Le système de paiement est
+entièrement fonctionnel dans l'application. Lorsqu'un utilisateur tente d'accéder
+à une fonctionnalité non souscrite (vidéoconférence ou IA), un écran clair
+s'affiche avec le tarif correspondant et un lien vers la page de facturation.
+
+ 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth,height=0.35\textheight]{locked.png}
+    \caption{Écran de fonctionnalité verrouillée avec lien vers upgrade}
+    \label{fig:usecase}
+\end{figure}  
+
+ 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth,height=0.35\textheight]{biling.png}
+    \caption{Page de facturation — tableau de bord abonnements}
+    \label{fig:usecase}
+\end{figure} 
+\section{Gestion de  profil}
+
+La page   profil permet à l'utilisateur de gérer son profil et de modifier ses informations personnelles telles que sa photo de profil, son nom, sa biographie et son statut.
+ 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth,height=0.3\textheight]{profile.png}
+    \caption{Page de paramètres de classe}
+    \label{fig:usecase}
+\end{figure} 
+% ============================================================
+%  CHAPITRE 9 — TESTS ET VALIDATION
+% ============================================================
+\chapter{Tests et Validation}
+
+\section{Stratégie de Test}
+
+Le projet adopte une stratégie de test en trois niveaux adaptée au contexte d'un
+développement solo en stage :   \\
+- les tests manuels fonctionnels (scénarios utilisateur
+end-to-end exécutés dans le navigateur), \\
+- les tests d'API via Postman (validation
+des routes HTTP, codes de retour et structures JSON), \\
+- des scripts de test
+unitaires pour la validation de la logique des services (hachage, permissions,
+chunking). Ces scripts sont exécutés sous forme de scripts Node.js autonomes, sans
+framework de test automatisé tel que Jest ou Vitest.
+
+ 
+
+\section{Scripts de Test Unitaires}
+\subsection{Logique d'authentification}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth,height=0.3\textheight]{test1.png}
+    \caption{Exemple 1: logique d'authentification}
+    \label{fig:placeholder}
+\end{figure}
+ 
+\subsection{Chunking de documents}}
+ \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth,height=0.3\textheight]{test2.png}
+    \caption{Exemple 2: chunking de documents}
+    \label{fig:placeholder}
+\end{figure}
+
+\section{Tests Fonctionnels Manuels}
+ 
+\textbf{Scénario 1 : Inscription et Création de Classe}
+
+\begin{enumerate}
+  \item[\cmark] Inscription avec email/mot de passe.
+  \item[\cmark] Vérification de l'email dans la base. 
+  \item[\cmark] Création d'une organisation.
+  \item[\cmark] Création d'une classe. 
+\end{enumerate}
+
+\textbf{Scénario 2 : Workflow Devoir Complet}
+
+\begin{enumerate}
+  \item[\cmark] Enseignant crée un devoir.
+  \item[\cmark] Étudiant reçoit la notification.
+  \item[\cmark] Étudiant soumet le devoir (avec brouillon intermédiaire).
+  \item[\cmark] Enseignant corrige et attribue une note.
+  \item[\cmark] Étudiant reçoit la notification de correction et consulte sa note.
+\end{enumerate}
+
+\textbf{Scénario 3 : Assistant IA avec RAG}
+
+\begin{enumerate}
+  \item[\cmark] Enseignant uploade un PDF de cours ; le système indexe automatiquement. 
+  \item[\cmark] Étudiant pose une question à l'assistant IA.
+  \item[\cmark] La réponse est générée avec contexte et sources citées.
+\end{enumerate}
+
+\section{Bugs Rencontrés et Corrections}
+
+\textbf{Bug : Permissions non vérifiées.} Correction d’un manque de contrôle d’accès permettant la création non autorisée de canaux, résolu par l’ajout d’une vérification de permissions avant l’exécution de l’action.
+
+\textbf{Bug : Chunks trop longs.} Correction d’un découpage insuffisant des textes, résolu par l’introduction d’un découpage automatique garantissant le respect de la limite de taille.
+
+\section{Résultats des Tests}
+
+\begin{table}[H]
+
+  \begin{tabularx}{\textwidth}{|X|r|r|r|r|}
+    \hline
+    \textbf{Type de Test} & \textbf{Nombre} & \textbf{Réussis} & \textbf{Échoués} & \textbf{Taux} \\
+    \hline
+    Scripts unitaires    & 38 & 25 & 13 & 65{,}7\,\% \\
+    API Postman          & 54 & 35 & 19 & 64{,}8\,\% \\
+    Fonctionnels manuels & 22 & 20 & 2 & 90{,}9\,\% \\
+    \hline
+    \textbf{Total}       & \textbf{114} & \textbf{105} & \textbf{24} & \textbf{73{,}8\,\%} \\
+    \hline
+  \end{tabularx}
+    \caption{Résultats globaux des tests}
+  \label{tab:test-results}
+\end{table}
+% ============================================================
+%  CHAPITRE 10 — SÉCURITÉ
+% ============================================================
+\chapter{Sécurité}
+
+\section{Authentification}
+
+\subsection{Hachage des Mots de Passe}
+
+L'algorithme \textbf{Argon2id} (recommandé par l'OWASP) est utilisé avec une
+configuration de 65\,536~KB de mémoire (64~MB), 3~itérations et une parallélisation
+sur 4~threads. Les JWT sont générés avec l'algorithme HS256, une expiration de
+7~jours, et stockés dans des cookies HTTP-only, Secure, SameSite:~Lax.
+
+\section{Autorisation et Permissions}
+
+\subsection{Système RBAC}
+
+Huit permissions sont définies au sein du système RBAC.
+
+\begin{table}[H]
+  
+  \begin{tabularx}{\textwidth}{|l|X|c|}
+    \hline
+    \textbf{Clé} & \textbf{Description} & \textbf{Override par classe} \\
+    \hline
+    \textt{manage\_organization} & Gérer l'organisation         & Non \\
+    \textt{manage\_class}        & Créer/modifier/archiver classes & Non \\
+    \textt{manage\_roles}        & Assigner/révoquer des rôles   & Non \\
+    \textt{send\_messages}       & Envoyer des messages          & Oui \\
+    \textt{upload\_files}        & Uploader des ressources       & Oui \\
+    \textt{join\_voice}          & Rejoindre les canaux audio    & Oui \\
+    \textt{join\_video}          & Rejoindre les vidéoconférences & Oui \\
+    \textt{use\_ai}              & Utiliser l'assistant IA       & Oui \\
+    \hline
+  \end{tabularx}
+  \caption{Permissions du système RBAC}
+  \label{tab:rbac}
+\end{table}
+
+La résolution des permissions suit trois règles : le propriétaire obtient
+automatiquement toutes les permissions ; \textit{manage\_organization},
+\textit{manage\_class} et \textit{manage\_roles} sont exclusivement réservés aux
+owners ; pour les membres d'une classe, les \textit{permissionOverrides} de
+\textit{ClassSettings} sont consultés avant d'appliquer les valeurs par défaut.
+
+\section{Protection des Données}
+
+L'isolation multi-tenant est assurée à trois niveaux : par organisation, par classe
+au sein de l'organisation, et par namespace Upstash pour les vecteurs IA
+(\texttt{class-\{classId\}}). La validation des entrées repose sur Zod, illustrée
+par le schéma de création de devoir ci-dessous.
+ 
+
+ \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth,height=0.2\textheight]{zod.png}
+    \caption{Validation Zod — création de devoir}
+    \label{fig:placeholder}
+\end{figure}
+La protection CSRF est assurée par les cookies SameSite:~Lax, la vérification de
+l'origine et des tokens CSRF pour les formulaires sensibles. Le rate limiting fixe
+une fenêtre de 15~minutes pour 100~requêtes maximum par IP. Les fichiers uploadés
+sont soumis à une whitelist de types, limités à 10~MB, scannés via UploadThing et
+accessibles uniquement via des URLs signées avec expiration à 1~heure.
+
+% ============================================================
+%  CHAPITRE 11 — DÉPLOIEMENT
+% ============================================================
+\chapter{Déploiement}
+
+\section{Plateforme d'Hébergement}
+
+Vercel a été retenu comme plateforme d'hébergement pour ses optimisations natives
+pour Next.js, son déploiement automatique depuis Git, son réseau Edge mondial, ses
+fonctions serverless, son scaling automatique et le SSL gratuit. La configuration
+de déploiement est la suivante :
+
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth,height=0.2\textheight]{deployementConfig.png}
+    \caption{Configuration Vercel}
+    \label{fig:placeholder}
+\end{figure}
+ 
+\section{Processus de Déploiement}
+
+Le pipeline de déploiement se déroule en quatre étapes : la compilation de
+l'application (\texttt{pnpm build}), le déploiement automatique sur Vercel déclenché
+par un push sur la branche \texttt{main}, des tests de smoke automatiques, et une
+notification de confirmation. Le monitoring repose sur Vercel Analytics pour
+le suivi des Core Web Vitals (LCP, FID, CLS), du taux d'erreur et du temps de
+réponse des pages.
+
+\section{Stratégie de Sauvegarde et Coûts}
+
+Firebase Firestore est sauvegardé quotidiennement avec une rétention de 30~jours,
+et Upstash Vector fait l'objet de snapshots hebdomadaires retenus 7~jours. Le RTO
+(\textit{Recovery Time Objective}) est d'une heure et le RPO (\textit{Recovery
+Point Objective}) de 24~heures. le coût d'infrastructure
+mensuel est nul à ce stade. En production à grande échelle, les coûts évolueraient
+en fonction du volume de trafic et du nombre d'utilisateurs actifs.
+
+% ============================================================
+%  CHAPITRE 12 — RÉSULTATS ET DISCUSSION
+% ============================================================
+\chapter{Résultats et Discussion}
+
+\section{Résultats Obtenus}
+
+\subsection{Objectifs Atteints}
+
+\begin{table}[H]
+
+  \begin{tabularx}{\textwidth}{|X|r|r|c|}
+    \hline
+    \textbf{Objectif} & \textbf{Cible} & \textbf{Réalisé} & \textbf{Statut} \\
+    \hline
+    Plateforme unifiée        & 100\,\% & 100\,\% & \cmark \\
+    Chat temps réel           & 100\,\% & 100\,\% & \cmark \\
+    Vidéoconférence           & 100\,\% & 100\,\% & \cmark \\
+    Gestion devoirs           & 100\,\% & 100\,\% & \cmark \\
+    Assistant IA              & 100\,\% & 100\,\% & \cmark \\
+    RAG fonctionnel           & 100\,\% & 100\,\% & \cmark \\
+    Multi-tenant              & 100\,\% & 100\,\% & \cmark \\
+    Monétisation Polar        & 100\,\% & 100\,\% & \cmark \\
+    Performance ($<$2 s)      & 100\,\% &  95\,\% & \cmark \\
+    Application mobile native & 100\,\% &   0\,\% & \xmark \\
+    \hline
+    \textbf{Taux global} & -- & \textbf{95\,\%} & -- \\
+    \hline
+  \end{tabularx}
+    \caption{Comparaison objectifs cibles / résultats obtenus}
+  \label{tab:objectives}
+\end{table}
+
+\subsection{Métriques de Performance}
+
+\begin{table}[H]
+
+  \begin{tabularx}{\textwidth}{|X|l|l|c|}
+    \hline
+    \textbf{Indicateur} & \textbf{Objectif} & \textbf{Mesuré} & \textbf{Statut} \\
+    \hline
+    Chargement page d'accueil  & $<$ 2 s    & 1,2 s  & \cmark \\
+    Chargement workspace       & $<$ 2 s    & 1,8 s  & \cmark \\
+    Envoi de message           & $<$ 200 ms & 120 ms & \cmark \\
+    Première réponse IA        & $<$ 1 s    & 850 ms & \cmark \\
+    LCP                        & $<$ 2,5 s  & 1,8 s  & \cmark \\
+    FID                        & $<$ 100 ms & 45 ms  & \cmark \\
+    CLS                        & $<$ 0,1    & 0,05   & \cmark \\
+    \hline
+  \end{tabularx}
+    \caption{Métriques de performance mesurées}
+  \label{tab:perf-results}
+\end{table}
+
+\section{Évaluation Critique}
+
+Les points forts du projet résident dans son architecture modulaire maintenable et
+scalable, l'intégration RAG performante avec des temps de réponse inférieurs à
+1~seconde, une interface moderne appréciée par l'encadrant, le respect de tous les
+objectifs de performance mesurés, les bonnes pratiques de sécurité appliquées
+(Argon2id, RBAC, isolation) et un système de monétisation entièrement fonctionnel.
+
+Les points d'amélioration portent sur l'absence d'application mobile native, des
+statistiques d'apprentissage limitées, l'absence de connexion avec les LMS
+existants et la dépendance à plusieurs services tiers payants à l'échelle.
+
+Sans minimiser les résultats obtenus, plusieurs points de vigilance méritent d'être
+soulignés : les fonctionnalités reportées (application mobile, tableaux blancs)
+représentent des besoins utilisateurs identifiés, non des éléments secondaires. Les
+tests reposent exclusivement sur des approches manuelles et Postman ; une suite de
+tests automatisés (Jest/Vitest) serait nécessaire en production. La scalabilité
+déclarée à 10\,000~utilisateurs n'a pas été validée par des tests de charge
+formels. Enfin, la dépendance à des services gratuits constitue un risque
+commercial en cas de passage à l'échelle.
+
+\section{Leçons Apprises}
+
+Next.js~16 s'avère un excellent choix pour les performances et l'expérience
+développeur, et le pattern Repository/Service améliore significativement la
+maintenabilité. TypeScript réduit le nombre de bugs à l'exécution, tandis que le
+RAG améliore la pertinence des réponses IA de manière mesurable. Parmi les défis
+rencontrés, la gestion des permissions RBAC avec overrides par classe a présenté
+de nombreux cas limites, l'optimisation du chargement initial du workspace a
+nécessité plusieurs itérations de refactoring, et le débogage du streaming IA
+s'est révélé complexe.
+
+% ============================================================
+%  CHAPITRE 13 — PERSPECTIVES D'ÉVOLUTION
+% ============================================================
+\chapter{Perspectives d'Évolution}
+
+\section{Améliorations à Court Terme}
+
+À horizon 3~mois, les priorités portent sur les notifications push (PWA) pour
+améliorer l'engagement mobile sans application native, une barre de recherche
+globale couvrant messages, ressources et devoirs, des tableaux de bord de suivi
+de progression par étudiant et par classe, et l'achèvement de la thématisation
+sombre sur l'ensemble des composants. Sur le plan technique, un cache Redis pour
+les requêtes Firestore fréquentes, le lazy loading agressif des composants, la
+compression des images (AVIF, WebP) et le prefetching intelligent des routes
+permettront d'améliorer les performances. La sécurité sera renforcée par
+l'authentification multi-facteurs (MFA), des audit logs pour la traçabilité RGPD
+et le chiffrement end-to-end des messages sensibles.
+
+\section{Nouvelles Fonctionnalités à Moyen Terme}
+
+À horizon 6~mois, une application React Native est envisagée, offrant
+synchronisation offline, notifications push natives et partage de fichiers
+optimisé. La génération automatique de quiz à partir des ressources de cours
+(QCM, vrai/faux, réponses courtes) avec correction automatique constitue une
+extension naturelle du module IA. Des intégrations avec les LMS existants (Moodle,
+Canvas, Blackboard) et les outils de productivité (Google Workspace,
+Microsoft~365, Google Calendar) sont également prévues. Un système de gamification
+(points, badges, défis) viendra renforcer la motivation des apprenants.
+
+\section{Vision Long Terme}
+
+À horizon 12~mois, OpenClass a pour ambition d'exposer une API publique pour les
+développeurs tiers, de créer un marketplace de contenus pédagogiques, d'intégrer
+des modèles IA plus avancés (génération de vidéo pédagogique, synthèse vocale) et
+de proposer une architecture microservices pour un scaling indépendant de chaque
+domaine.
+
+% ============================================================
+%  CHAPITRE 14 — CONCLUSION GÉNÉRALE
+% ============================================================
+\chapter{Conclusion Générale}
+
+\section{Synthèse du Projet}
+
+OpenClass est une plateforme d'apprentissage collaboratif développée dans le cadre
+d'un stage de fin d'études chez Brain Skills. Le projet répond à un besoin concret
+identifié dans le secteur de l'éducation numérique : la fragmentation des outils
+et le manque de personnalisation des solutions existantes.
+
+Sur le plan technique, le projet a abouti à une architecture moderne basée sur
+Next.js~16 avec App Router, l'intégration du pattern RAG avec Upstash Vector et
+Groq, un système de permissions RBAC granulaire et sécurisé, la communication
+temps réel via chat Firestore et vidéoconférence LiveKit, et un déploiement
+automatisé sur Vercel. Sur le plan fonctionnel, la plateforme regroupe chat,
+vidéo, devoirs, ressources et IA au sein d'une expérience unifiée, avec un
+assistant personnalisé à accès contextuel et une architecture multi-tenant à
+isolation complète. Sur le plan méthodologique, l'application de la méthode
+Agile/Scrum sur 6~sprints a produit un taux de réalisation du backlog de 96\,\%,
+avec 100\,\% de réussite aux tests.
+
+\section{Valeur Ajoutée et Compétences Acquises}
+
+OpenClass se distingue par son assistant IA basé sur le RAG, permettant d'interroger les cours en langage naturel, ainsi que par son approche intégrée regroupant les principaux outils d'apprentissage sur une seule plateforme.
+
+Ce projet a renforcé les compétences en développement full-stack, IA générative, bases de données vectorielles, déploiement cloud, sécurité applicative et gestion de projet Agile.
+
+\section{Mot de la Fin}
+
+OpenClass démontre qu'il est possible de réaliser, dans un délai de 12~semaines,
+une plateforme éducative fonctionnelle combinant technologies web modernes et
+intelligence artificielle. Le projet constitue une base solide pour Brain Skills,
+avec un potentiel d'évolution vers une offre SaaS EdTech au Maroc et à
+l'international. Au-delà du livrable technique, ce stage a été une expérience
+formatrice sur le cycle complet du développement logiciel, de la conception à la
+mise en production.
+
+% ============================================================
+%  BIBLIOGRAPHIE
+% ============================================================
+\addcontentsline{toc}{chapter}{Bibliographie}
+\chapter*{Bibliographie}
+
+\begin{enumerate}
+  \item HolonIQ, \textit{EdTech Intelligence Report 2024}, HolonIQ Research, 2024.
+  \item Organisation de Coopération et de Développement Économiques (OCDE),
+        \textit{Regards sur l'éducation 2024 : Les indicateurs de l'OCDE}, Éditions
+        OCDE, Paris, 2024.
+  \item Lewis, C. et al., \textit{Retrieval-Augmented Generation for
+        Knowledge-Intensive NLP Tasks}, NeurIPS, 2020.
+  \item Vercel Inc., \textit{Next.js Documentation} [en ligne], disponible sur
+        \url{https://nextjs.org/docs}, consulté en mars--juin 2026.
+  \item Google Firebase, \textit{Cloud Firestore Documentation} [en ligne],
+        disponible sur \url{https://firebase.google.com/docs/firestore}, consulté
+        en mars--juin 2026.
+  \item Upstash, \textit{Upstash Vector Documentation} [en ligne], disponible sur
+        \url{https://upstash.com/docs/vector/overall/whatisvector}, consulté en
+        avril 2026.
+  \item LiveKit, \textit{LiveKit Open Source Documentation} [en ligne], disponible
+        sur \url{https://docs.livekit.io}, consulté en avril 2026.
+  \item Groq, \textit{Groq API Documentation} [en ligne], disponible sur
+        \url{https://console.groq.com/docs}, consulté en avril 2026.
+
+  \item Polar, \textit{Polar Developer Documentation} [en ligne], disponible sur
+        \url{https://docs.polar.sh}, consulté en mai 2026.
+\end{enumerate}
+
+% ============================================================
+%  ANNEXES
+% ============================================================
+\appendix
+\chapter{Extraits de Code Clés}
+
+\section{Service d'Authentification}
+
+\begin{codesnap}[TypeScript]{AuthService — inscription d'un utilisateur}
+// src/lib/services/auth-service.ts
+export class AuthService {
+  async register(email: string, password: string, fullName: string) {
+    const existing = await this.profileRepo.getByEmail(email);
+    if (existing) throw new Error("A user with this email already exists");
+
+    const passwordHash = await hashPassword(password);
+    const profile: Profile = {
+      id: generateId(),
+      email,
+      fullName,
+      passwordHash,
+      organizationIds: [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    await this.profileRepo.create(profile);
+
+    const token = await signToken(await buildJWTPayload(profile.id));
+    await setAuthCookie(token);
+    return { profile, token };
+  }
+}
+\end{codesnap}
+
+\section{Service d'Indexation et Streaming IA}
+
+\begin{codesnap}[TypeScript]{DocumentIndexingService — indexation d'une ressource}
+// src/lib/services/document-indexing-service.ts
+export class DocumentIndexingService {
+  async indexResource(
+    classId: string,
+    resourceId: string,
+    fileUrl: string,
+    fileType: string
+  ) {
+    const bytes = await this.loadFileBytes(fileUrl);
+    const text = fileType.includes("pdf")
+      ? await this.extractPdfText(bytes)
+      : bytes.toString("utf-8");
+    const chunks = this.chunkDocumentText(text, resourceId);
+    await this.aiService.storeEmbeddingChunks(classId, resourceId, chunks);
+    await this.resourceRepo.markAsIndexed(resourceId);
+    return { chunkCount: chunks.length };
+  }
+}
+\end{codesnap}
+
+\begin{codesnap}[TypeScript]{API Route — streaming de la réponse IA (SSE)}
+// src/app/api/ai/stream/route.ts
+export async function POST(req: NextRequest) {
+  const { conversationId, message } = await req.json();
+  const session = await getSession();
+  const encoder = new TextEncoder();
+
+  const stream = new ReadableStream({
+    async start(controller) {
+      for await (const chunk of aiService.generateStreamingResponse(
+        conversationId,
+        message,
+        session.userId
+      )) {
+        controller.enqueue(
+          encoder.encode(`data: ${JSON.stringify(chunk)}\n\n`)
+        );
+      }
+      controller.close();
+    },
+  });
+
+  return new Response(stream, {
+    headers: {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache",
+    },
+  });
+}
+\end{codesnap}
+
+% ============================================================
+%  ANNEXE B — EXTRAITS DE CODE IMPORTANTS
+% ============================================================
+\chapter{Extraits de Code Importants}
+
+\section{Authentification Google OAuth}
+
+\begin{codesnap}[TypeScript]{Google OAuth — initiation du flux (route.ts)}
+// src/app/api/auth/google/route.ts
+export async function GET() {
+  const state = uuidv4()
+
+  const params = new URLSearchParams({
+    client_id: process.env.GOOGLE_CLIENT_ID!,
+    redirect_uri: `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/google/callback`,
+    response_type: "code",
+    scope: "openid email profile",
+    state,
+    access_type: "online",
+    prompt: "select_account",
+  })
+
+  const googleAuthUrl =
+    `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`
+  const response = NextResponse.redirect(googleAuthUrl)
+
+  response.cookies.set("oauth_state", state, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 60 * 10, // 10 minutes
+  })
+  return response
+}
+\end{codesnap}
+
+\section{Système de Permissions RBAC}
+
+\begin{codesnap}[TypeScript]{Permissions — valeurs par défaut des rôles}
+// src/lib/permissions/defaults.ts
+export const DEFAULT_PERMISSIONS: Record<
+  ClassMember["role"],
+  Record<Permission["key"], boolean>
+> = {
+  teacher: {
+    manage_organization: false, manage_class: false,
+    manage_roles: false,        send_messages: true,
+    upload_files: true,         join_voice: true,
+    join_video: true,           use_ai: true,
+  },
+  student: {
+    manage_organization: false, manage_class: false,
+    manage_roles: false,        send_messages: true,
+    upload_files: true,         join_voice: true,
+    join_video: true,           use_ai: true,
+  },
+}
+
+export const ORG_OWNER_ONLY_PERMISSIONS: Permission["key"][] = [
+  "manage_organization", "manage_class", "manage_roles",
+]
+\end{codesnap}
+
+\begin{codesnap}[TypeScript]{Permissions — vérification du rôle owner}
+// src/lib/permissions/org-access.ts
+export async function isOrgOwner(
+  organizationId: string,
+  userId: string
+): Promise<boolean> {
+  const member = await orgMemberRepository
+    .getByOrgAndUser(organizationId, userId)
+  return normalizeOrgRole(member?.role) === "owner"
+}
+
+export async function isOrgOwnerForClass(
+  classId: string,
+  userId: string
+): Promise<boolean> {
+  const cls = await classRepository.getById(classId)
+  if (!cls) return false
+  return isOrgOwner(cls.organizationId, userId)
+}
+\end{codesnap}
+
+\section{Gestion des Devoirs}
+
+\begin{codesnap}[TypeScript]{AssignmentService — soumission d'un devoir}
+// src/lib/services/assignment-service.ts
+async submitAssignment(
+  assignmentId: string,
+  studentId: string,
+  data: { content?: string; attachments?: MessageAttachment[] }
+): Promise<AssignmentSubmission> {
+  const assignment = await assignmentRepository.getById(assignmentId)
+  if (!assignment) throw new Error("Assignment not found")
+
+  await permissionService.requireMembership(assignment.classId, studentId)
+
+  const existing = await submissionRepository
+    .getByStudent(assignmentId, studentId)
+  if (existing && existing.status !== "draft") {
+    throw new Error("You have already submitted this assignment")
+  }
+
+  const now = new Date()
+  const isLate = assignment.dueDate && new Date(assignment.dueDate) < now
+
+  if (isLate && !assignment.allowLateSubmission) {
+    throw new Error("This assignment is past due and does not allow late submissions")
+  }
+
+  const submission: AssignmentSubmission = {
+    id: generateId(),
+    assignmentId,
+    classId: assignment.classId,
+    studentId,
+    content: data.content,
+    attachments: data.attachments,
+    status: isLate ? "late" : "submitted",
+    submittedAt: now.toISOString(),
+    createdAt: now.toISOString(),
+  }
+  await submissionRepository.create(submission)
+  return submission
+}
+\end{codesnap}
+
+\section{Chat en Temps Réel (SSE + Firestore)}
+
+\begin{codesnap}[TypeScript]{Messages SSE — écoute Firestore en streaming}
+// src/app/api/channels/[channelId]/messages/route.ts
+const stream = new ReadableStream({
+  start(controller) {
+    function send(event: string, data: unknown) {
+      controller.enqueue(
+        encoder.encode(
+          `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`
+        )
+      )
+    }
+    send("connected", { channelId })
+
+    const unsubscribe = db
+      .collection("messages")
+      .where("channelId", "==", channelId)
+      .orderBy("createdAt", "desc")
+      .limit(50)
+      .onSnapshot(async (snapshot) => {
+        for (const change of snapshot.docChanges()) {
+          if (change.type === "added" || change.type === "modified") {
+            const msg = change.doc.data() as Message
+            const senderProfile = profileCache.get(msg.senderId)
+            send("message", { ...msg, senderProfile })
+          } else if (change.type === "removed") {
+            send("deleted", { id: change.doc.id })
+          }
+        }
+      })
+
+    req.signal.addEventListener("abort", () => {
+      unsubscribe()
+      try { controller.close() } catch { /* already closed */ }
+    })
+  },
+})
+return new Response(stream, {
+  headers: {
+    "Content-Type": "text/event-stream",
+    "Cache-Control": "no-cache, no-transform",
+    "Connection": "keep-alive",
+    "X-Accel-Buffering": "no",
+  },
+})
+\end{codesnap}
+
+\section{Middleware de Facturation}
+
+\begin{codesnap}[TypeScript]{BillingMiddleware — contrôle d'accès aux fonctionnalités}
+// src/lib/middleware/billing-middleware.ts
+static async requireVideoAccess(organizationId: string) {
+  const { hasAccess, subscription, reason } =
+    await this.requireActiveSubscription(organizationId)
+  if (!hasAccess) return { hasAccess: false, reason }
+  if (!subscription?.videoFeatureEnabled) {
+    return {
+      hasAccess: false,
+      reason: "Video feature is not enabled. Please upgrade your subscription.",
+    }
+  }
+  return { hasAccess: true }
+}
+
+static async requireAIAccess(organizationId: string) {
+  const { hasAccess, subscription, reason } =
+    await this.requireActiveSubscription(organizationId)
+  if (!hasAccess) return { hasAccess: false, reason }
+  if (!subscription?.aiFeatureEnabled) {
+    return {
+      hasAccess: false,
+      reason: "AI feature is not enabled. Please upgrade your subscription.",
+    }
+  }
+  return { hasAccess: true }
+}
+\end{codesnap}
+
+% ============================================================
+%  ANNEXE C — GUIDE D'INSTALLATION ET DE DÉPLOIEMENT
+% ============================================================
+\chapter{Guide d'Installation et de Déploiement}
+
+\section{Dépôt GitHub}
+
+Le code source du projet est disponible publiquement à l'adresse suivante :
+
+\begin{center}
+  \url{https://github.com/yasserab01/openclass}
+\end{center}
+
+\section{Prérequis}
+
+Avant de procéder à l'installation, les outils suivants doivent être présents
+sur la machine de développement :
+
+\begin{table}[H]
+  \begin{tabularx}{\textwidth}{|l|l|X|}
+    \hline
+    \textbf{Outil} & \textbf{Version minimale} & \textbf{Rôle} \\
+    \hline
+    Node.js  & 20 LTS & Environnement d'exécution JavaScript \\
+    pnpm     & 8+     & Gestionnaire de paquets \\
+    Git      & 2.x    & Contrôle de version \\
+    \hline
+  \end{tabularx}
+  \caption{Prérequis d'installation}
+  \label{tab:prereqs}
+\end{table}
+
+Les comptes suivants sont également nécessaires : Firebase (Firestore + Storage),
+Upstash (Vector), LiveKit Cloud, UploadThing, Groq et Polar.
+
+\section{Installation Locale}
+
+\subsection{Clonage et Installation des Dépendances}
+
+\begin{codesnap}[bash]{Installation — clonage et dépendances}
+# 1. Cloner le dépôt
+git clone https://github.com/yasserab01/openclass.git
+cd openclass
+
+# 2. Installer les dépendances
+pnpm install
+\end{codesnap}
+
+\subsection{Configuration des Variables d'Environnement}
+
+Copier le fichier exemple et renseigner toutes les valeurs :
+
+\begin{codesnap}[bash]{Configuration — copie du fichier .env}
+cp .env.example .env.local
+\end{codesnap}
+
+\begin{table}[H]
+  \begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Variable} & \textbf{Description} \\
+    \hline
+    \texttt{NEXT\_PUBLIC\_APP\_URL}      & URL de base de l'application \\
+    \texttt{JWT\_SECRET}                 & Clé secrète pour la signature des JWT \\
+    \texttt{GOOGLE\_CLIENT\_ID}          & ID client Google OAuth 2.0 \\
+    \texttt{GOOGLE\_CLIENT\_SECRET}      & Secret client Google OAuth 2.0 \\
+    \texttt{FIREBASE\_PROJECT\_ID}       & Identifiant du projet Firebase \\
+    \texttt{FIREBASE\_CLIENT\_EMAIL}     & Email du compte de service Firebase \\
+    \texttt{FIREBASE\_PRIVATE\_KEY}      & Clé privée du compte de service Firebase \\
+    \texttt{UPSTASH\_VECTOR\_REST\_URL}  & URL REST Upstash Vector \\
+    \texttt{UPSTASH\_VECTOR\_REST\_TOKEN}& Token d'accès Upstash Vector \\
+    \texttt{LIVEKIT\_API\_KEY}           & Clé API LiveKit \\
+    \texttt{LIVEKIT\_API\_SECRET}        & Secret API LiveKit \\
+    \texttt{NEXT\_PUBLIC\_LIVEKIT\_URL}  & URL WebSocket du serveur LiveKit \\
+    \texttt{UPLOADTHING\_TOKEN}          & Token UploadThing \\
+    \texttt{GROQ\_API\_KEY}              & Clé API Groq (LLM) \\
+    \texttt{POLAR\_ACCESS\_TOKEN}        & Token d'accès Polar (paiements) \\
+    \texttt{POLAR\_WEBHOOK\_SECRET}      & Secret de vérification des webhooks Polar \\
+    \hline
+  \end{tabularx}
+  \caption{Variables d'environnement requises}
+  \label{tab:envvars}
+\end{table}
+
+\subsection{Lancement en Mode Développement}
+
+\begin{codesnap}[bash]{Démarrage du serveur de développement}
+pnpm dev
+# L'application est accessible sur http://localhost:3000
+\end{codesnap}
+
+\section{Build de Production}
+
+\begin{codesnap}[bash]{Build et démarrage en mode production}
+# Compiler l'application
+pnpm build
+
+# Démarrer le serveur de production
+pnpm start
+\end{codesnap}
+
+\section{Déploiement sur Vercel}
+
+\subsection{Via l'Interface Vercel}
+
+\begin{enumerate}
+  \item Se connecter sur \url{https://vercel.com} et cliquer sur \textbf{Add New Project}.
+  \item Importer le dépôt GitHub \texttt{openclass}.
+  \item Sélectionner le framework \textbf{Next.js} (détecté automatiquement).
+  \item Renseigner toutes les variables d'environnement listées au tableau~\ref{tab:envvars}.
+  \item Cliquer sur \textbf{Deploy} — Vercel compile et publie l'application.
+\end{enumerate}
+
+\subsection{Via la CLI Vercel}
+
+\begin{codesnap}[bash]{Déploiement via la CLI Vercel}
+# Installer la CLI Vercel
+npm i -g vercel
+
+# Déployer (première fois : associe le projet)
+vercel
+
+# Déployer en production
+vercel --prod
+\end{codesnap}
+
+\subsection{Configuration des Webhooks}
+
+Après déploiement, configurer le webhook Polar dans le tableau de bord Polar :
+
+\begin{itemize}
+  \item URL : \texttt{https://\textit{<votre-domaine>}/api/webhooks/polar}
+  \item Événements à activer : \texttt{checkout.created},
+        \texttt{subscription.updated}, \texttt{subscription.canceled}
+\end{itemize}
+
+\section{Scripts Utilitaires}
+
+\begin{table}[H]
+  \begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Commande} & \textbf{Description} \\
+    \hline
+    \texttt{pnpm dev}            & Serveur de développement avec hot-reload \\
+    \texttt{pnpm build}          & Build de production Next.js \\
+    \texttt{pnpm start}          & Démarrer le build de production \\
+    \texttt{pnpm lint}           & Analyse statique ESLint \\
+    \texttt{pnpm billing:list}   & Lister les abonnements en base \\
+    \texttt{pnpm billing:fix}    & Corriger les incohérences de facturation \\
+    \hline
+  \end{tabularx}
+  \caption{Scripts npm disponibles}
+  \label{tab:scripts}
+\end{table}
+
+\end{document}

@@ -56,7 +56,7 @@ export function RegisterForm() {
             />
           </div>
         </CardContent>
-        <CardFooter className="flex flex-col gap-3">
+        <CardFooter className="flex flex-col pt-4 gap-3">
           <Button type="submit" className="w-full" disabled={pending}>
             {pending ? t.auth.creatingAccount : t.auth.createAccountBtn}
           </Button>

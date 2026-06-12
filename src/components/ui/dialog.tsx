@@ -182,9 +182,7 @@ function DialogContent({ className, children, showCloseButton = true, ...props }
   return (
     <DialogPortal>
       <DialogOverlay />
-      {/* Centering wrapper — avoids translate-based centering which breaks when an
-          ancestor has a CSS transform or filter (e.g. backdrop-blur, RTL scaleX).
-          Clicking the padding area outside the card closes the dialog. */}
+    
       <div
         className="fixed inset-0 z-50 flex items-center justify-center p-4"
         onClick={() => setOpen(false)}

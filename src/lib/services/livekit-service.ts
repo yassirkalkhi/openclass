@@ -5,8 +5,7 @@ export function buildLiveKitRoomName(channelId: string): string {
   return `oc-${slug || "room"}`
 }
 
-/** WebSocket URL for clients (wss://…). */
-export function getLiveKitServerUrl(): string {
+ export function getLiveKitServerUrl(): string {
   const url =
     process.env.NEXT_PUBLIC_LIVEKIT_URL ??
     process.env.LIVEKIT_URL
@@ -16,8 +15,7 @@ export function getLiveKitServerUrl(): string {
   return url
 }
 
-/** HTTPS host for LiveKit Server API. */
-function getLiveKitApiHost(): string {
+ function getLiveKitApiHost(): string {
   const wsUrl = getLiveKitServerUrl()
   return wsUrl.replace(/^wss:/i, "https:").replace(/^ws:/i, "http:")
 }

@@ -5,9 +5,7 @@ import type { Subscription } from "@/lib/types/database"
 const subscriptionRepo = new SubscriptionRepository()
 
 export class BillingMiddleware {
-  /**
-   * Check if organization has an active subscription
-   */
+ 
   static async requireActiveSubscription(organizationId: string): Promise<{
     hasAccess: boolean
     subscription: Subscription | null
@@ -53,9 +51,7 @@ export class BillingMiddleware {
     }
   }
 
-  /**
-   * Check if organization has access to video feature
-   */
+ 
   static async requireVideoAccess(organizationId: string): Promise<{
     hasAccess: boolean
     reason?: string
@@ -77,9 +73,7 @@ export class BillingMiddleware {
     return { hasAccess: true }
   }
 
-  /**
-   * Check if organization has access to AI feature
-   */
+ 
   static async requireAIAccess(organizationId: string): Promise<{
     hasAccess: boolean
     reason?: string
@@ -100,10 +94,7 @@ export class BillingMiddleware {
 
     return { hasAccess: true }
   }
-
-  /**
-   * Get subscription status for display
-   */
+ 
   static async getSubscriptionStatus(organizationId: string): Promise<{
     hasSubscription: boolean
     isActive: boolean

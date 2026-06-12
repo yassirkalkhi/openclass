@@ -3,8 +3,7 @@
 import { OrganizationService } from "@/lib/services/organization-service"
 import { AuthService } from "@/lib/services/auth-service"
 import { actionError, getActionOrgId, getActionUserId, type ActionResult } from "@/lib/actions/utils"
-import { requireSession } from "@/lib/session"
-import { redirect } from "next/navigation"
+ import { redirect } from "next/navigation"
 import type { Organization, OrganizationMember } from "@/lib/types/database"
 import { revalidatePath } from "next/cache"
 
@@ -85,8 +84,7 @@ export async function getOrgMembersAction(
     const members = await organizationService.getMembers(orgId)
     const requester = members.find((m) => m.userId === userId)
     if (!requester) return { success: false, error: "Forbidden" }
-
-    // Enrich members with profile data
+ 
     const profileRepo = await import("@/lib/repositories/profile-repository")
     const profileRepository = new profileRepo.ProfileRepository()
     const userIds = Array.from(new Set(members.map((m) => m.userId)))

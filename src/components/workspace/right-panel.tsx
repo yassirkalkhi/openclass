@@ -6,9 +6,11 @@ import { useWorkspaceUI } from "@/context/workspace-ui-context"
 import { useClass } from "@/context/class-context"
 import { getClassMembersAction } from "@/app/actions/class"
 import { getPendingInvitationCountAction } from "@/app/actions/invitation"
+import { getUnreadNotificationCountAction } from "@/app/actions/notification"
 import type { ClassMember } from "@/lib/types/database"
 import { UserAvatar, RoleBadge } from "@/components/workspace/user-avatar"
 import { InvitationsPanel } from "@/components/workspace/invitations-panel"
+import { NotificationsPanel } from "@/components/workspace/notifications-panel"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
@@ -25,6 +27,7 @@ export function RightPanel() {
   const [members, setMembers] = useState<ClassMember[]>([])
   const [membersLoading, setMembersLoading] = useState(true)
   const [inviteCount, setInviteCount] = useState(0)
+  const [notifCount, setNotifCount] = useState(0)
   const [refreshing, setRefreshing] = useState(false)
   const requestIdRef = useRef(0)
 
@@ -55,16 +58,27 @@ export function RightPanel() {
     }
   }, [])
 
+  const fetchNotifCount = useCallback(async () => {
+    try {
+      const r = await getUnreadNotificationCountAction()
+      if (r.success && r.data !== undefined) setNotifCount(r.data)
+    } catch (error) {
+      console.error("Failed to fetch notification count:", error)
+    }
+  }, [])
+
   useEffect(() => {
     setMembersLoading(true)
     fetchMembers(classData.id, false)
     fetchInviteCount()
+    fetchNotifCount()
     const interval = setInterval(() => {
       fetchMembers(classData.id, true)
       fetchInviteCount()
+      fetchNotifCount()
     }, POLL_INTERVAL_MS)
     return () => clearInterval(interval)
-  }, [classData.id, fetchMembers, fetchInviteCount])
+  }, [classData.id, fetchMembers, fetchInviteCount, fetchNotifCount])
 
   if (!rightPanelOpen) {
     return null
@@ -77,7 +91,7 @@ export function RightPanel() {
         onValueChange={(v) => setRightPanelTab(v as typeof rightPanelTab)}
         className="flex h-full flex-col"
       >
-        <TabsList className="m-2 grid w-[calc(100%-1rem)] grid-cols-2">
+        <TabsList className="m-2 grid w-[calc(100%-1rem)] grid-cols-3">
           <TabsTrigger value="members" className="px-1 text-xs">
             {t.classes.members}
           </TabsTrigger>
@@ -86,6 +100,14 @@ export function RightPanel() {
             {inviteCount > 0 && (
               <Badge variant="default" className="h-4 min-w-4 px-1 text-[9px]">
                 {inviteCount}
+              </Badge>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="notifications" className="gap-1 px-1 text-xs">
+            {t.notifications.title}
+            {notifCount > 0 && (
+              <Badge variant="default" className="h-4 min-w-4 px-1 text-[9px]">
+                {notifCount > 9 ? "9+" : notifCount}
               </Badge>
             )}
           </TabsTrigger>
@@ -142,6 +164,10 @@ export function RightPanel() {
 
         <TabsContent value="invitations" className="mt-0 px-2 flex-1 overflow-hidden">
           <InvitationsPanel />
+        </TabsContent>
+
+        <TabsContent value="notifications" className="mt-0 px-2 flex-1 flex flex-col min-h-0 overflow-hidden">
+          <NotificationsPanel />
         </TabsContent>
       </Tabs>
     </aside>

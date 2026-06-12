@@ -11,10 +11,7 @@ const orgMemberRepository = new OrganizationMemberRepository()
 const profileRepository = new ProfileRepository()
 
 export class OrganizationService {
-  /**
-   * Create a new organization.
-   * The creator becomes an owner.
-   */
+ 
   async createOrganization(
     data: Pick<Organization, "name" | "slug" | "type" | "visibility"> & {
       description?: string
@@ -58,9 +55,7 @@ export class OrganizationService {
     return organization
   }
 
-  /**
-   * Join an organization by invite code (defaults to member).
-   */
+  
   async joinByInviteCode(
     code: string,
     userId: string,
@@ -89,9 +84,7 @@ export class OrganizationService {
     return membership
   }
 
-  /**
-   * Update organization details. Only owners can update.
-   */
+ 
   async updateOrganization(
     orgId: string,
     data: Partial<Pick<Organization, "name" | "description" | "visibility">>,
@@ -110,9 +103,7 @@ export class OrganizationService {
     })
   }
 
-  /**
-   * Remove a member. Only owners can remove; cannot remove the last owner.
-   */
+   
   async removeMember(
     orgId: string,
     targetUserId: string,
@@ -140,9 +131,7 @@ export class OrganizationService {
     await profileRepository.removeOrganizationId(targetUserId, orgId)
   }
 
-  /**
-   * Update a member's org role (owner | member). Only owners may change roles.
-   */
+ 
   async updateMemberRole(
     orgId: string,
     targetUserId: string,
@@ -170,9 +159,7 @@ export class OrganizationService {
     await orgMemberRepository.update(targetMember.id, { role: normalizedRole })
   }
 
-  /**
-   * Regenerate the invite code. Only owners.
-   */
+  
   async regenerateInviteCode(orgId: string, requesterId: string): Promise<string> {
     if (!(await isOrgOwner(orgId, requesterId))) {
       throw new Error("Forbidden: Only organization owners can regenerate invite codes")
@@ -210,9 +197,7 @@ export class OrganizationService {
     return orgMemberRepository.countByOrganization(orgId)
   }
 
-  /**
-   * Leave an organization. Owners may leave only if another owner exists.
-   */
+ 
   async leaveOrganization(orgId: string, userId: string): Promise<void> {
     const member = await orgMemberRepository.getByOrgAndUser(orgId, userId)
     if (!member) throw new Error("You are not a member of this organization")
@@ -230,10 +215,7 @@ export class OrganizationService {
     await profileRepository.removeOrganizationId(userId, orgId)
   }
 
-  /**
-   * Delete an organization completely. Only owners can delete.
-   * WARNING: This permanently deletes the organization and all associated data.
-   */
+ 
   async deleteOrganization(orgId: string, requesterId: string): Promise<void> {
     if (!(await isOrgOwner(orgId, requesterId))) {
       throw new Error("Forbidden: Only organization owners can delete the organization")

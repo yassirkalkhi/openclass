@@ -13,8 +13,7 @@ export default function SettingsLayout({
 }) {
   const pathname = usePathname()
 
-  // params may be async in Next.js 15 — resolve slug from the current path instead
-  const base = pathname.split("/settings")[0] + "/settings"
+   const base = pathname.split("/settings")[0] + "/settings"
 
   const links = [
     { href: base, label: "General" },

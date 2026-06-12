@@ -19,8 +19,7 @@ interface I18nProviderProps {
 }
 
 export function I18nProvider({ children, initialLocale }: I18nProviderProps) {
-  // Initialize from cookie or use initial/default locale
-  const [locale, setLocaleState] = useState<Locale>(() => {
+   const [locale, setLocaleState] = useState<Locale>(() => {
     if (typeof window !== "undefined") {
       return getLocaleFromCookie()
     }
@@ -30,8 +29,7 @@ export function I18nProvider({ children, initialLocale }: I18nProviderProps) {
   const [translations, setTranslations] = useState<Translations>(locales[locale])
   const [rtl, setRtl] = useState<boolean>(isRTL(locale))
 
-  // Update translations and RTL when locale changes
-  useEffect(() => {
+   useEffect(() => {
     setTranslations(locales[locale])
     setRtl(isRTL(locale))
   }, [locale])
@@ -67,9 +65,7 @@ export function useI18n(): I18nContextType {
   return context
 }
 
-/**
- * Hook to get a specific translation namespace
- */
+ 
 export function useTranslation<K extends keyof Translations>(namespace: K) {
   const { t, locale, setLocale, isRTL } = useI18n()
   return {

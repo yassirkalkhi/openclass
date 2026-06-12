@@ -36,8 +36,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 
-// ── Permission metadata: labels, descriptions, icons ──────────────────────
-
+ 
 type PermMeta = {
   label: string
   description: string
@@ -72,8 +71,7 @@ const PERM_META: Partial<Record<PermissionKey, PermMeta>> = {
   },
 }
 
-// Only the member-action keys are editable per-class
-const EDITABLE_KEYS = Object.keys(PERM_META) as PermissionKey[]
+ const EDITABLE_KEYS = Object.keys(PERM_META) as PermissionKey[]
 
 const ROLE_CONFIG: Record<
   ClassMember["role"],

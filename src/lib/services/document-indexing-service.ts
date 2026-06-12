@@ -115,7 +115,8 @@ export class DocumentIndexingService {
     resourceId: string,
     fileUrl: string,
     fileType: string,
-    fileName?: string
+    fileName?: string,
+    chapterTitle?: string
   ): Promise<{ chunkCount: number }> {
     if (!isPdfType(fileType, fileName) && !isPlainTextType(fileType, fileName)) {
       throw new Error("Only PDF and plain-text files can be indexed for AI")
@@ -133,7 +134,7 @@ export class DocumentIndexingService {
       throw new Error("No extractable text found in document")
     }
 
-    await aiService.storeEmbeddingChunks(classId, resourceId, chunks)
+    await aiService.storeEmbeddingChunks(classId, resourceId, chunks, chapterTitle)
     await resourceRepository.markAsIndexed(resourceId)
 
     return { chunkCount: chunks.length }

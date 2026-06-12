@@ -9,7 +9,6 @@ export async function SubscriptionStatusWrapper() {
 
     return <SubscriptionStatusBadge {...status} />
   } catch (error) {
-    // If there's an error (e.g., no org context), don't show the badge
-    return null
+     return null
   }
 }

@@ -88,7 +88,7 @@ export async function switchOrganizationAction(orgId: string): Promise<ActionRes
 }
 
 export async function updateProfileAction(
-  data: { fullName?: string; bio?: string; status?: string }
+  data: { fullName?: string; bio?: string; status?: string; avatarUrl?: string }
 ): Promise<ActionResult> {
   const { requireSession } = await import("@/lib/session")
   const session = await requireSession()
@@ -98,5 +98,33 @@ export async function updateProfileAction(
     return { success: true }
   } catch (e) {
     return { success: false, error: e instanceof Error ? e.message : "Update failed" }
+  }
+}
+
+export async function changePasswordAction(
+  data: { currentPassword: string; newPassword: string }
+): Promise<ActionResult> {
+  const { requireSession } = await import("@/lib/session")
+  const session = await requireSession()
+  try {
+    const profile = await authService.getProfile(session.id)
+    if (!profile) return { success: false, error: "User not found" }
+
+    // OAuth-only accounts have no password
+    if (!profile.passwordHash) {
+      return { success: false, error: "Password change is not available for accounts linked via OAuth" }
+    }
+
+    const { verifyPassword, hashPassword } = await import("@/lib/hash")
+    const valid = await verifyPassword(data.currentPassword, profile.passwordHash)
+    if (!valid) return { success: false, error: "Current password is incorrect" }
+
+    const newHash = await hashPassword(data.newPassword)
+    const { ProfileRepository } = await import("@/lib/repositories/profile-repository")
+    const repo = new ProfileRepository()
+    await repo.update(session.id, { passwordHash: newHash, updatedAt: new Date().toISOString() })
+    return { success: true }
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : "Password change failed" }
   }
 }

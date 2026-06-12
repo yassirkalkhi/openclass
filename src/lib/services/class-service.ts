@@ -21,10 +21,7 @@ const orgMemberRepository = new OrganizationMemberRepository()
 const permissionService = new PermissionService()
 
 export class ClassService {
-  /**
-   * Create a new class within an organization.
-   * Creates the class + default channels (#general, #announcements) + owner membership + settings.
-   */
+   
   async createClass(
     data: Pick<Class, "name" | "slug" | "visibility"> & {
       description?: string
@@ -37,8 +34,7 @@ export class ClassService {
       throw new Error("Forbidden: Only organization owners can create classes")
     }
 
-    // Validate slug uniqueness within the org
-    const existingSlug = await classRepository.getBySlug(organizationId, data.slug)
+     const existingSlug = await classRepository.getBySlug(organizationId, data.slug)
     if (existingSlug) {
       throw new Error("A class with this slug already exists in this organization")
     }
@@ -110,9 +106,7 @@ export class ClassService {
     return newClass
   }
 
-  /**
-   * Join a class by invite code.
-   */
+  
   async joinByInviteCode(
     code: string,
     userId: string,
@@ -129,8 +123,7 @@ export class ClassService {
       throw new Error("You are already a member of this class")
     }
 
-    // Check if the user belongs to the class's organization
-    const orgMember = await orgMemberRepository.getByOrgAndUser(cls.organizationId, userId)
+     const orgMember = await orgMemberRepository.getByOrgAndUser(cls.organizationId, userId)
     if (!orgMember) {
       throw new Error("You must be a member of the organization to join this class")
     }
@@ -147,9 +140,7 @@ export class ClassService {
     return membership
   }
 
-  /**
-   * Update class details.
-   */
+ 
   async updateClass(
     classId: string,
     data: Partial<Pick<Class, "name" | "description" | "imageUrl" | "visibility">>,
@@ -163,9 +154,7 @@ export class ClassService {
     })
   }
 
-  /**
-   * Archive a class (soft delete).
-   */
+ 
   async archiveClass(classId: string, requesterId: string): Promise<void> {
     await permissionService.requirePermission(classId, requesterId, "manage_class")
 
@@ -175,9 +164,7 @@ export class ClassService {
     })
   }
 
-  /**
-   * Unarchive a class.
-   */
+  
   async unarchiveClass(classId: string, requesterId: string): Promise<void> {
     await permissionService.requirePermission(classId, requesterId, "manage_class")
 
@@ -187,9 +174,7 @@ export class ClassService {
     })
   }
 
-  /**
-   * Get all classes for a user.
-   */
+ 
   async getClassesForUser(userId: string): Promise<Class[]> {
     const memberships = await classMemberRepository.getByUser(userId)
     if (memberships.length === 0) return []
@@ -197,18 +182,12 @@ export class ClassService {
     const classIds = memberships.map((m) => m.classId)
     return classRepository.getByIds(classIds)
   }
-
-  /**
-   * Get all classes for an organization.
-   */
+ 
   async getClassesForOrganization(organizationId: string): Promise<Class[]> {
     return classRepository.getByOrganization(organizationId)
   }
 
-  /**
-   * Classes visible in the workspace: org owners see every non-archived class;
-   * other members only see classes they belong to.
-   */
+ 
   async getAccessibleClassesForUser(
     organizationId: string,
     userId: string
@@ -223,25 +202,18 @@ export class ClassService {
     )
   }
 
-  /**
-   * Get a class by ID (with membership check).
-   */
+ 
   async getClass(classId: string, userId: string): Promise<Class | null> {
     await permissionService.requireMembership(classId, userId)
     return classRepository.getById(classId)
   }
-
-  /**
-   * Get class members.
-   */
+ 
   async getClassMembers(classId: string, userId: string): Promise<ClassMember[]> {
     await permissionService.requireMembership(classId, userId)
     return classMemberRepository.getByClass(classId)
   }
 
-  /**
-   * Remove a member from the class.
-   */
+ 
   async removeMember(
     classId: string,
     targetUserId: string,
@@ -256,9 +228,7 @@ export class ClassService {
     await classMemberRepository.deleteByClassAndUser(classId, targetUserId)
   }
 
-  /**
-   * Leave a class.
-   */
+  
   async leaveClass(classId: string, userId: string): Promise<void> {
     const member = await classMemberRepository.getByClassAndUser(classId, userId)
     if (!member) throw new Error("You are not a member of this class")
@@ -266,9 +236,7 @@ export class ClassService {
     await classMemberRepository.deleteByClassAndUser(classId, userId)
   }
 
-  /**
-   * Update a member's role in the class.
-   */
+   
   async updateMemberRole(
     classId: string,
     targetUserId: string,
@@ -287,9 +255,7 @@ export class ClassService {
     await classMemberRepository.update(targetMember.id, { role: newRole })
   }
 
-  /**
-   * Regenerate the class invite code.
-   */
+   
   async regenerateInviteCode(classId: string, requesterId: string): Promise<string> {
     await permissionService.requirePermission(classId, requesterId, "manage_class")
 
@@ -301,17 +267,12 @@ export class ClassService {
     return newCode
   }
 
-  /**
-   * Get class settings.
-   */
+ 
   async getSettings(classId: string, userId: string): Promise<ClassSettings | null> {
     await permissionService.requireMembership(classId, userId)
     return classSettingsRepository.getByClass(classId)
   }
-
-  /**
-   * Update class settings.
-   */
+ 
   async updateSettings(
     classId: string,
     data: Partial<Pick<ClassSettings, "allowStudentUploads" | "allowAIAccess">>,
@@ -324,10 +285,7 @@ export class ClassService {
 
     await classSettingsRepository.update(settings.id, data)
   }
-
-  /**
-   * Get member count for a class.
-   */
+ 
   async getMemberCount(classId: string): Promise<number> {
     return classMemberRepository.countByClass(classId)
   }

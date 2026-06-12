@@ -1,15 +1,10 @@
 import type { Subscription } from "@/lib/types/database"
 
-/**
- * Format currency amount in MAD
- */
+ 
 export function formatMAD(amount: number): string {
   return `${amount.toFixed(2)} DH`
 }
-
-/**
- * Calculate prorated amount for feature changes
- */
+ 
 export function calculateProration(
   currentAmount: number,
   newAmount: number,
@@ -23,9 +18,7 @@ export function calculateProration(
   return charge - refund
 }
 
-/**
- * Get days remaining in billing period
- */
+ 
 export function getDaysRemaining(periodEnd: string): number {
   const end = new Date(periodEnd)
   const now = new Date()
@@ -33,16 +26,12 @@ export function getDaysRemaining(periodEnd: string): number {
   return Math.ceil(diff / (1000 * 60 * 60 * 24))
 }
 
-/**
- * Check if subscription is in good standing
- */
+ 
 export function isSubscriptionActive(status: Subscription["status"]): boolean {
   return status === "active" || status === "trialing"
 }
 
-/**
- * Get human-readable subscription status
- */
+  
 export function getSubscriptionStatusLabel(status: Subscription["status"]): string {
   const labels: Record<Subscription["status"], string> = {
     active: "Active",
@@ -54,9 +43,7 @@ export function getSubscriptionStatusLabel(status: Subscription["status"]): stri
   return labels[status] || status
 }
 
-/**
- * Get subscription status color
- */
+ 
 export function getSubscriptionStatusColor(
   status: Subscription["status"]
 ): "green" | "yellow" | "red" | "gray" {
@@ -65,17 +52,12 @@ export function getSubscriptionStatusColor(
   if (status === "incomplete") return "yellow"
   return "gray"
 }
-
-/**
- * Calculate next billing date
- */
+ 
 export function getNextBillingDate(currentPeriodEnd: string): Date {
   return new Date(currentPeriodEnd)
 }
 
-/**
- * Format billing period
- */
+ 
 export function formatBillingPeriod(start: string, end: string): string {
   const startDate = new Date(start)
   const endDate = new Date(end)
@@ -88,27 +70,19 @@ export function formatBillingPeriod(start: string, end: string): string {
   
   return `${formatter.format(startDate)} - ${formatter.format(endDate)}`
 }
-
-/**
- * Check if subscription will renew
- */
+ 
 export function willRenew(subscription: Subscription): boolean {
   return !subscription.cancelAtPeriodEnd && isSubscriptionActive(subscription.status)
 }
 
-/**
- * Get feature list for subscription
- */
+ 
 export function getSubscriptionFeatures(subscription: Subscription): string[] {
   const features = ["Base Features"]
   if (subscription.videoFeatureEnabled) features.push("Video Chatting")
   if (subscription.aiFeatureEnabled) features.push("AI Assistant")
   return features
 }
-
-/**
- * Calculate total monthly cost
- */
+ 
 export function calculateMonthlyCost(
   videoEnabled: boolean,
   aiEnabled: boolean,
@@ -122,9 +96,7 @@ export function calculateMonthlyCost(
   return total
 }
 
-/**
- * Get upgrade/downgrade message
- */
+ 
 export function getFeatureChangeMessage(
   currentVideo: boolean,
   newVideo: boolean,
@@ -144,10 +116,7 @@ export function getFeatureChangeMessage(
   if (changes.length === 0) return "No changes"
   return changes.join(" and ")
 }
-
-/**
- * Validate subscription for feature access
- */
+ 
 export function validateFeatureAccess(
   subscription: Subscription | null,
   feature: "video" | "ai"
@@ -182,18 +151,13 @@ export function validateFeatureAccess(
   
   return { allowed: true }
 }
-
-/**
- * Get trial days remaining
- */
+ 
 export function getTrialDaysRemaining(subscription: Subscription): number | null {
   if (subscription.status !== "trialing") return null
   return getDaysRemaining(subscription.currentPeriodEnd)
 }
 
-/**
- * Check if subscription needs attention
- */
+ 
 export function needsAttention(subscription: Subscription): boolean {
   return (
     subscription.status === "past_due" ||
@@ -202,9 +166,7 @@ export function needsAttention(subscription: Subscription): boolean {
   )
 }
 
-/**
- * Get attention message
- */
+ 
 export function getAttentionMessage(subscription: Subscription): string | null {
   if (subscription.status === "past_due") {
     return "Your payment is past due. Please update your payment method."

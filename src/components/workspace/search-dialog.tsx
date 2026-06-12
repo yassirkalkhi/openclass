@@ -40,8 +40,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
     }
   }, [open])
 
-  // Escape key / backdrop cancel
-  useEffect(() => {
+   useEffect(() => {
     const dialog = dialogRef.current
     if (!dialog) return
     const handleCancel = (e: Event) => {
@@ -52,8 +51,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
     return () => dialog.removeEventListener("cancel", handleCancel)
   }, [onOpenChange])
 
-  // Debounced search — fires 300 ms after the user stops typing
-  const runSearch = useCallback(async (q: string) => {
+   const runSearch = useCallback(async (q: string) => {
     if (q.trim().length < 2) {
       setResults([])
       setIsLoading(false)
@@ -83,8 +81,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
     }
   }, [query, runSearch])
 
-  // Reset active index when results change
-  useEffect(() => {
+   useEffect(() => {
     setActiveIndex(0)
   }, [results])
 

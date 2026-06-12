@@ -17,7 +17,7 @@ export type SearchResultItem = {
   title: string
   subtitle: string
   href: string
-  /** For channel/assignment/resource — the class slug for building links */
+  /** For channel/assignment/resource  */
   classSlug?: string
 }
 
@@ -26,11 +26,7 @@ export type SearchResults = {
   total: number
 }
 
-/**
- * Cross-entity search across all accessible classes.
- * Fetches data from Firestore in parallel per class, then filters
- * client-side since Firestore has no full-text search.
- */
+ 
 export async function searchAction(query: string): Promise<ActionResult<SearchResults>> {
   if (!query || query.trim().length < 2) {
     return { success: true, data: { items: [], total: 0 } }
@@ -40,13 +36,11 @@ export async function searchAction(query: string): Promise<ActionResult<SearchRe
     const [orgId, userId] = await Promise.all([getActionOrgId(), getActionUserId()])
     const q = query.trim().toLowerCase()
 
-    // 1. Get all accessible classes
-    const classes = await classService.getAccessibleClassesForUser(orgId, userId)
+     const classes = await classService.getAccessibleClassesForUser(orgId, userId)
 
     const items: SearchResultItem[] = []
 
-    // 2. Match classes themselves
-    for (const cls of classes) {
+     for (const cls of classes) {
       if (
         cls.name.toLowerCase().includes(q) ||
         cls.description?.toLowerCase().includes(q) ||
@@ -62,8 +56,7 @@ export async function searchAction(query: string): Promise<ActionResult<SearchRe
       }
     }
 
-    // 3. Fan out to channels + assignments + resources for each class in parallel
-    await Promise.all(
+     await Promise.all(
       classes.map(async (cls) => {
         const [channelResult, assignmentResult, resourceResult] = await Promise.allSettled([
           channelService.getChannels(cls.id, userId),

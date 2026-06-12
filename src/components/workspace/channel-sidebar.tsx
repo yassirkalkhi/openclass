@@ -19,8 +19,7 @@ const channelIcons = {
   video: Video,
 }
 
-/** Returns a translated display name for the reserved fixed channels. */
-function useChannelDisplayName(name: string): string {
+ function useChannelDisplayName(name: string): string {
   const { t } = useTranslation("channels")
   if (name === "general") return t.general
   if (name === "announcements") return t.announcements

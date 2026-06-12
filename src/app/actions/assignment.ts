@@ -21,6 +21,8 @@ export async function getClassAssignmentsAction(
 export async function createAssignmentAction(
   data: Pick<Assignment, "classId" | "title"> & {
     description?: string
+    attachments?: string[]
+    attachmentNames?: string[]
     dueDate?: string
     maxScore?: number
     allowLateSubmission?: boolean
@@ -30,6 +32,33 @@ export async function createAssignmentAction(
     const userId = await getActionUserId()
     const assignment = await assignmentService.createAssignment(data, userId)
     return { success: true, data: assignment }
+  } catch (e) {
+    return actionError(e)
+  }
+}
+
+export async function updateAssignmentAction(
+  assignmentId: string,
+  data: Partial<
+    Pick<Assignment, "title" | "description" | "attachments" | "attachmentNames" | "dueDate" | "maxScore" | "allowLateSubmission">
+  >
+): Promise<ActionResult<void>> {
+  try {
+    const userId = await getActionUserId()
+    await assignmentService.updateAssignment(assignmentId, data, userId)
+    return { success: true, data: undefined }
+  } catch (e) {
+    return actionError(e)
+  }
+}
+
+export async function deleteAssignmentAction(
+  assignmentId: string
+): Promise<ActionResult<void>> {
+  try {
+    const userId = await getActionUserId()
+    await assignmentService.deleteAssignment(assignmentId, userId)
+    return { success: true, data: undefined }
   } catch (e) {
     return actionError(e)
   }

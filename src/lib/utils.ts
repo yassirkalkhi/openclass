@@ -10,8 +10,7 @@ export function generateId() {
   return uuidv4();
 }
 
-/** Firestore rejects undefined field values — omit them before writes. */
-export function stripUndefined<T extends Record<string, unknown>>(obj: T): T {
+ export function stripUndefined<T extends Record<string, unknown>>(obj: T): T {
   return Object.fromEntries(
     Object.entries(obj).filter(([, value]) => value !== undefined)
   ) as T

@@ -351,6 +351,15 @@ export const en = {
     attachmentAdded: "File attached",
     pdfOnly: "Only PDF files are supported",
     attachedFiles: "Attached files",
+    editAssignment: "Edit Assignment",
+    editAssignmentDesc: "Update the assignment details",
+    saveChanges: "Save Changes",
+    deleteAssignment: "Delete Assignment",
+    deleteAssignmentConfirmTitle: "Delete Assignment",
+    deleteAssignmentConfirmDesc: "This will permanently delete the assignment and all student submissions. This action cannot be undone.",
+    deleteAssignmentConfirm: "Delete Assignment",
+    deleting: "Deleting...",
+    saving: "Saving...",
   },
 
   resources: {
@@ -520,6 +529,35 @@ export const en = {
     },
   },
 
+  profile: {
+    title: "Profile",
+    subtitle: "Manage your personal information",
+    fullName: "Full Name",
+    fullNamePlaceholder: "Your full name",
+    email: "Email",
+    emailNote: "Your email address cannot be changed.",
+    bio: "Bio",
+    bioPlaceholder: "Tell us a little about yourself…",
+    status: "Status",
+    statusPlaceholder: "What are you up to?",
+    avatar: "Profile Picture",
+    avatarChange: "Change avatar",
+    changePassword: "Change Password",
+    currentPassword: "Current Password",
+    newPassword: "New Password",
+    confirmPassword: "Confirm New Password",
+    passwordMismatch: "Passwords do not match",
+    passwordTooShort: "Password must be at least 8 characters",
+    saveProfile: "Save Profile",
+    savingProfile: "Saving…",
+    profileSaved: "Profile saved successfully.",
+    passwordChanged: "Password changed successfully.",
+    passwordChanging: "Changing…",
+    changePasswordBtn: "Change Password",
+    personalInfo: "Personal Information",
+    security: "Security",
+  },
+
   settings: {
     title: "Settings",
     general: "General",
@@ -578,6 +616,14 @@ export const en = {
     allCaughtUp: "You're all caught up",
   },
 
+  notifications: {
+    title: "Alerts",
+    noNotifications: "No notifications",
+    noNotificationsDesc: "Assignment posts and session alerts will appear here.",
+    markAllRead: "Mark all read",
+    loadingNotifications: "Loading…",
+  },
+
   errors: {
     generic: "An error occurred",
     notFound: "Not found",
@@ -587,6 +633,122 @@ export const en = {
     networkError: "Network error",
     unexpectedError: "An unexpected network error occurred.",
     failedToBuild: "Failed to build workspace",
+  },
+
+  landing: {
+    // nav
+    navFeatures: "Features",
+    navPricing: "Pricing",
+    navStories: "Stories",
+    navSignIn: "Sign in",
+    navStartFree: "Start free",
+
+    // hero
+    heroBadge: "Collaborative learning, reimagined",
+    heroHeadlinePre: "Where",
+    heroHeadlineAccent: "classrooms",
+    heroHeadlinePost: "come alive",
+    heroSub: "OpenClass unites channels, live video, AI tutoring, and assignments in one fluid workspace — so teachers can teach and students can actually learn.",
+    heroCTA: "Start for free",
+    heroSecondaryCTA: "Sign in to your class",
+    statStudents: "Students",
+    statClasses: "Classes",
+    statSatisfaction: "Satisfaction",
+
+    // marquee
+    marqueeItems: "Live video classes,AI-powered tutoring,Assignment management,Team channels,File sharing,Real-time collaboration,Smart notifications,Org-level permissions",
+
+    // features section
+    featuresEyebrow: "Everything you need",
+    featuresHeadlinePre: "Built for how learning",
+    featuresHeadlineAccent: "actually works",
+    featuresSub: "Every tool thoughtfully connected — no more hopping between a dozen apps.",
+    feat1Title: "Organised Channels",
+    feat1Desc: "Create dedicated spaces for announcements, homework, Q&A, and general discussion. Keep every conversation in context.",
+    feat2Title: "Live Video Sessions",
+    feat2Desc: "Launch crystal-clear video classes directly from a channel. No external link, no friction — just click and teach.",
+    feat3Title: "AI Tutor",
+    feat3Desc: "An always-available AI assistant trained on your class resources — answers questions, summarises materials, and guides students.",
+    feat4Title: "Assignments & Grading",
+    feat4Desc: "Create, distribute, and collect assignments. Track submissions and provide feedback all in one clean view.",
+    feat5Title: "Multi-Class Organisations",
+    feat5Desc: "Group multiple classes under one organisation with role-based permissions, shared resources, and unified billing.",
+    feat6Title: "Resource Library",
+    feat6Desc: "Upload PDFs, slides, and documents once — students find everything in a single searchable library, always.",
+
+    // how it works
+    howEyebrow: "Get going in minutes",
+    howHeadline: "Three steps to your first class",
+    step1Title: "Create your org",
+    step1Desc: "Register and set up your organisation. Invite colleagues or run solo.",
+    step2Title: "Open a class",
+    step2Desc: "Create a class, add channels, upload resources — your structure, your rules.",
+    step3Title: "Invite students",
+    step3Desc: "Share an invite link. Students join, explore, and start learning instantly.",
+
+    // pricing
+    pricingEyebrow: "Simple, modular pricing",
+    pricingHeadline: "Pay only for what you use",
+    pricingSub: "Start with the base workspace, then add video or AI whenever you're ready.",
+    plan1Name: "Base Plan",
+    plan1Desc: "Everything you need to run a class — channels, assignments, resources.",
+    plan1F1: "Unlimited channels",
+    plan1F2: "Assignments & submissions",
+    plan1F3: "Resource library",
+    plan1F4: "Org management",
+    plan1F5: "Email invitations",
+    plan2Name: "Base + Video + AI",
+    plan2Desc: "The full OpenClass experience. Teach live, then let AI handle the follow-ups.",
+    plan2F1: "Everything in Base",
+    plan2F2: "Live video sessions",
+    plan2F3: "AI tutor & assistant",
+    plan2F4: "Smart resource Q&A",
+    plan2F5: "Priority support",
+    plan2Badge: "Most popular",
+    plan3Name: "Add-ons",
+    plan3Desc: "Each add-on is 150 DH/mo. Mix and match Video or AI on top of any base plan.",
+    plan3F1: "Video add-on: 150 DH",
+    plan3F2: "AI add-on: 150 DH",
+    plan3F3: "Combine both for 300 DH",
+    plan3F4: "Cancel anytime",
+    plan3F5: "No hidden fees",
+    planCTA: "Get started",
+    planPriceSuffix: "DH / mo",
+
+    // testimonials
+    testimonialsEyebrow: "Real stories",
+    testimonialsHeadline: "Teachers and students love it",
+    t1Quote: "I moved my entire prep course here in a weekend. The AI tutor handles repeat questions so I can focus on teaching.",
+    t1Name: "Yasmine Benali",
+    t1Role: "Physics teacher, Casablanca",
+    t2Quote: "Having live video, chat, and assignments in one place means I never lose track of what's due or where a conversation was.",
+    t2Name: "Omar Idrissi",
+    t2Role: "Student, Université Mohammed V",
+    t3Quote: "The resource library with AI Q&A is a game-changer. Students engage deeply instead of just downloading PDFs.",
+    t3Name: "Sara El Fassi",
+    t3Role: "Private tutor, Rabat",
+
+    // CTA
+    ctaEyebrow: "Ready to start?",
+    ctaHeadline: "Your class is one click away",
+    ctaSub: "Set up your organisation, open your first class, and invite students — all in under five minutes.",
+    ctaPrimary: "Create your free account",
+    ctaSecondary: "Already have an account? Sign in",
+
+    // footer
+    footerCopy: "Built for educators, by educators.",
+
+    // fake UI preview
+    previewChannelLabel: "Channels",
+    previewMsg1: "Please review Chapter 4 before Friday's session 📖",
+    previewMsg1Sender: "Ms. Benali · just now",
+    previewMsg2: "Got it! Can the AI summarise it for me? 🤖",
+    previewMsg2Sender: "You · now",
+    previewMsg3: "Sure! Chapter 4 covers photosynthesis: light reactions, the Calvin cycle, and…",
+    previewUrl: "openclass.app/classroom",
+
+    // lang switcher
+    langLabel: "Language",
   },
 } as const
 

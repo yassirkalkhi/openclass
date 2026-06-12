@@ -26,8 +26,7 @@ export const DEFAULT_PERMISSIONS: Record<
   },
 }
 
-/** Permissions granted only to organization owners (not class roles). */
-export const ORG_OWNER_ONLY_PERMISSIONS: Permission["key"][] = [
+ export const ORG_OWNER_ONLY_PERMISSIONS: Permission["key"][] = [
   "manage_organization",
   "manage_class",
   "manage_roles",

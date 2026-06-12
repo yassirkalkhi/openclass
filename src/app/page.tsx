@@ -1,15 +1,12 @@
-import { redirect } from "next/navigation"
-import { getSession } from "@/lib/session"
+import type { Metadata } from "next"
+import { LandingPage } from "@/components/landing/landing-page"
 
-export const dynamic = 'force-dynamic'
+export const metadata: Metadata = {
+  title: "OpenClass — The Modern Learning Workspace",
+  description:
+    "Bring your classes, channels, assignments, and AI assistant together in one vibrant collaborative space.",
+}
 
-export default async function HomePage() {
-  const session = await getSession()
-  if (!session) {
-    redirect("/login")
-  }
-  if (session.activeOrganizationId) {
-    redirect("/app")
-  }
-  redirect("/organizations")
+export default function HomePage() {
+  return <LandingPage />
 }

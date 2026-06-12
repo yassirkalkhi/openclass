@@ -12,9 +12,7 @@ const subscriptionRepo = new SubscriptionRepository()
 const organizationRepo = new OrganizationRepository()
 const profileRepo = new ProfileRepository()
 
-/**
- * Diagnose subscription sync issues by checking Polar vs local database
- */
+ 
 export async function diagnoseSubscriptionAction(): Promise<
   ActionResult<{
     hasLocalSubscription: boolean
@@ -80,11 +78,7 @@ export async function diagnoseSubscriptionAction(): Promise<
     return actionError(e)
   }
 }
-
-/**
- * Automatically sync the most recent active Polar subscription for the current user.
- * Called from the billing success page right after checkout completes.
- */
+ 
 export async function autoSyncSubscriptionAction(): Promise<
   ActionResult<{ message: string; synced: boolean }>
 > {
@@ -140,8 +134,8 @@ export async function autoSyncSubscriptionAction(): Promise<
     if (existingSubscription) {
       await subscriptionRepo.update(existingSubscription.id, {
         status: latestSub.status as any,
-        currentPeriodStart: new Date(latestSub.currentPeriodStart * 1000).toISOString(),
-        currentPeriodEnd: new Date(latestSub.currentPeriodEnd * 1000).toISOString(),
+        currentPeriodStart: new Date(latestSub.currentPeriodStart).toISOString(),
+        currentPeriodEnd: new Date(latestSub.currentPeriodEnd).toISOString(),
         cancelAtPeriodEnd: latestSub.cancelAtPeriodEnd || false,
         videoFeatureEnabled: videoEnabled,
         aiFeatureEnabled: aiEnabled,
@@ -161,8 +155,8 @@ export async function autoSyncSubscriptionAction(): Promise<
         polarSubscriptionId: latestSub.id,
         polarCustomerId: latestSub.customerId,
         status: latestSub.status as any,
-        currentPeriodStart: new Date(latestSub.currentPeriodStart * 1000).toISOString(),
-        currentPeriodEnd: new Date(latestSub.currentPeriodEnd * 1000).toISOString(),
+        currentPeriodStart: new Date(latestSub.currentPeriodStart).toISOString(),
+        currentPeriodEnd: new Date(latestSub.currentPeriodEnd).toISOString(),
         cancelAtPeriodEnd: latestSub.cancelAtPeriodEnd || false,
         videoFeatureEnabled: videoEnabled,
         aiFeatureEnabled: aiEnabled,
@@ -229,8 +223,8 @@ export async function syncSubscriptionFromPolarAction(
       // Update existing subscription
       await subscriptionRepo.update(existingSubscription.id, {
         status: polarSub.status as any,
-        currentPeriodStart: new Date(polarSub.currentPeriodStart * 1000).toISOString(),
-        currentPeriodEnd: new Date(polarSub.currentPeriodEnd * 1000).toISOString(),
+        currentPeriodStart: new Date(polarSub.currentPeriodStart).toISOString(),
+        currentPeriodEnd: new Date(polarSub.currentPeriodEnd).toISOString(),
         cancelAtPeriodEnd: polarSub.cancelAtPeriodEnd || false,
         videoFeatureEnabled: videoEnabled,
         aiFeatureEnabled: aiEnabled,
@@ -259,8 +253,8 @@ export async function syncSubscriptionFromPolarAction(
         polarSubscriptionId: polarSub.id,
         polarCustomerId: polarSub.customerId,
         status: polarSub.status as any,
-        currentPeriodStart: new Date(polarSub.currentPeriodStart * 1000).toISOString(),
-        currentPeriodEnd: new Date(polarSub.currentPeriodEnd * 1000).toISOString(),
+        currentPeriodStart: new Date(polarSub.currentPeriodStart).toISOString(),
+        currentPeriodEnd: new Date(polarSub.currentPeriodEnd).toISOString(),
         cancelAtPeriodEnd: polarSub.cancelAtPeriodEnd || false,
         videoFeatureEnabled: videoEnabled,
         aiFeatureEnabled: aiEnabled,

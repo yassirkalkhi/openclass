@@ -9,19 +9,7 @@ import type { Message } from "@/lib/types/database"
 const channelRepo = new ChannelRepository()
 const profileRepo = new ProfileRepository()
 
-/**
- * GET /api/channels/[channelId]/messages
- *
- * Server-Sent Events stream. Authenticates the caller via the existing JWT
- * cookie, verifies they are a member of the channel's class, then opens a
- * Firestore onSnapshot listener scoped to the last 50 messages and forwards
- * every change as an SSE event to the browser.
- *
- * Event types emitted on the stream:
- *  - "connected"  — sent once immediately so the client knows the stream is live
- *  - "message"    — a new or updated message (enriched with senderProfile)
- *  - "deleted"    — a message that was removed  { id: string }
- */
+ 
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ channelId: string }> }
@@ -48,8 +36,7 @@ export async function GET(
     return new Response("Channel not found", { status: 404 })
   }
 
-  // Verify the caller is a member of this class
-  const memberSnap = await db
+   const memberSnap = await db
     .collection("classMembers")
     .where("classId", "==", channel.classId)
     .where("userId", "==", userId)
@@ -60,8 +47,7 @@ export async function GET(
     return new Response("Forbidden", { status: 403 })
   }
 
-  // ── Profile cache (populated lazily as new senders appear) ──────────────────
-  const profileCache = new Map<string, object>()
+   const profileCache = new Map<string, object>()
 
   async function enrichSenderProfile(senderId: string) {
     if (!profileCache.has(senderId)) {
@@ -89,7 +75,7 @@ export async function GET(
       // Immediately confirm the stream is live
       send("connected", { channelId })
 
-      // Keep track of previously-seen doc IDs so we can detect deletes
+      
       const knownIds = new Set<string>()
 
       const unsubscribe = db
@@ -113,8 +99,7 @@ export async function GET(
               }
             }
 
-            // Enrich all added/modified messages with sender profiles
-            await Promise.all(
+             await Promise.all(
               addedOrModified.map((msg) => enrichSenderProfile(msg.senderId))
             )
 

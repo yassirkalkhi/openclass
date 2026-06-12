@@ -27,8 +27,7 @@ export class ClassInvitationService {
   private async requireCanInvite(classId: string, userId: string): Promise<Class> {
     const cls = await classRepository.getById(classId)
     if (!cls) throw new Error("Class not found")
-    // Teachers and org owners can invite members
-    await permissionService.requireRole(classId, userId, "teacher")
+     await permissionService.requireRole(classId, userId, "teacher")
     return cls
   }
 

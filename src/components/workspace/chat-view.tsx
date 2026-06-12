@@ -6,7 +6,10 @@ import {
   sendMessageAction,
   deleteMessageAction,
   editMessageAction,
+  addReactionAction,
+  removeReactionAction,
 } from "@/app/actions/chat"
+import { ALLOWED_REACTION_EMOJIS } from "@/lib/chat/reactions"
 import { usePermission } from "@/hooks/use-permission"
 import { useClass } from "@/context/class-context"
 import type { Message, Channel, MessageAttachment } from "@/lib/types/database"
@@ -33,11 +36,9 @@ export function ChatView({ channel }: { channel: Channel }) {
   const { classData } = useClass()
   const { t } = useI18n()
 
-  // Real-time messages from SSE / Firestore onSnapshot
-  const { messages: realtimeMessages, isLoading, isConnected } = useRealtimeMessages(channel.id)
+   const { messages: realtimeMessages, isLoading, isConnected } = useRealtimeMessages(channel.id)
 
-  // Local optimistic layer on top of real-time messages
-  const [optimisticMessages, setOptimisticMessages] = useState<Message[]>([])
+   const [optimisticMessages, setOptimisticMessages] = useState<Message[]>([])
   const [content, setContent] = useState("")
   const [pendingAttachments, setPendingAttachments] = useState<PendingAttachment[]>([])
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null)
@@ -52,9 +53,7 @@ export function ChatView({ channel }: { channel: Channel }) {
   const currentUserId = auth?.user?.id
   const scrollRef = useRef<HTMLDivElement>(null)
 
-  // Merge real-time messages with any pending optimistic ones
-  // Optimistic messages are keyed by temp-* ids and dropped once the real
-  // message arrives from the SSE stream
+   
   const messages = [
     ...realtimeMessages,
     ...optimisticMessages.filter(
@@ -64,13 +63,11 @@ export function ChatView({ channel }: { channel: Channel }) {
     (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
   )
 
-  // Clear stale optimistic messages when channel changes
-  useEffect(() => {
+   useEffect(() => {
     setOptimisticMessages([])
   }, [channel.id])
 
-  // Auto-scroll to bottom when messages arrive
-  const prevMessageCountRef = useRef(0)
+   const prevMessageCountRef = useRef(0)
   useEffect(() => {
     const count = messages.length
     if (count !== prevMessageCountRef.current) {
@@ -94,8 +91,7 @@ export function ChatView({ channel }: { channel: Channel }) {
     setPendingAttachments([])
     setIsSending(true)
 
-    // Optimistic message with a temp id — will be replaced by the real one
-    // that arrives via SSE once the server writes to Firestore
+ 
     const optimisticMessage: any = {
       id: `temp-${Date.now()}`,
       channelId: channel.id,
@@ -119,12 +115,10 @@ export function ChatView({ channel }: { channel: Channel }) {
     startTransition(async () => {
       const result = await sendMessageAction(channel.id, messageContent, attachments)
       setIsSending(false)
-      // Remove the optimistic entry regardless — the SSE stream will deliver
-      // the real message if the write succeeded
+ 
       setOptimisticMessages((prev) => prev.filter((m) => m.id !== optimisticMessage.id))
       if (!result.success) {
-        // Roll back: restore the draft
-        setContent(messageContent === "(attachment)" ? "" : messageContent)
+         setContent(messageContent === "(attachment)" ? "" : messageContent)
         if (attachments) setPendingAttachments(attachments as any)
       }
     })
@@ -144,10 +138,56 @@ export function ChatView({ channel }: { channel: Channel }) {
 
   async function handleDelete(messageId: string) {
     startTransition(async () => {
-      // Optimistically hide the message while the server processes the delete
-      setOptimisticMessages((prev) => prev.filter((m) => m.id !== messageId))
+       setOptimisticMessages((prev) => prev.filter((m) => m.id !== messageId))
       await deleteMessageAction(messageId)
-      // The SSE stream's "deleted" event will remove it from realtimeMessages
+     })
+  }
+
+  async function handleReaction(messageId: string, emoji: string) {
+    const currentUserId_ = currentUserId
+    if (!currentUserId_) return
+
+     const msg = messages.find((m) => m.id === messageId)
+    const alreadyReacted = msg?.reactions?.some(
+      (r) => r.emoji === emoji && r.userId === currentUserId_
+    )
+
+     setOptimisticMessages((prev) => {
+      const existingIdx = prev.findIndex((m) => m.id === messageId)
+      const base = existingIdx !== -1 ? prev[existingIdx] : msg
+      if (!base) return prev
+
+      const updatedReactions = alreadyReacted
+        ? (base.reactions ?? []).filter(
+            (r) => !(r.emoji === emoji && r.userId === currentUserId_)
+          )
+        : [
+            ...(base.reactions ?? []),
+            {
+              id: `opt-${Date.now()}`,
+              messageId,
+              userId: currentUserId_,
+              emoji,
+              createdAt: new Date().toISOString(),
+            },
+          ]
+
+      const updated = { ...base, reactions: updatedReactions }
+      if (existingIdx !== -1) {
+        const next = [...prev]
+        next[existingIdx] = updated
+        return next
+      }
+      return [...prev, updated]
+    })
+
+    startTransition(async () => {
+      if (alreadyReacted) {
+        await removeReactionAction(messageId, emoji)
+      } else {
+        await addReactionAction(messageId, emoji)
+      }
+      
     })
   }
 
@@ -190,7 +230,7 @@ export function ChatView({ channel }: { channel: Channel }) {
       </div>
 
       {/* Messages */}
-      <ScrollArea ref={scrollRef} className="flex-1 px-27 bg-gradient-to-b from-background to-muted/5">
+      <ScrollArea ref={scrollRef} className="flex-1 px-2 bg-gradient-to-b from-background to-muted/5">
         <div className="flex min-h-full w-full flex-col justify-end px-4 py-6 md:px-6">
           {isLoading ? (
             <>
@@ -334,7 +374,62 @@ export function ChatView({ channel }: { channel: Channel }) {
                             })}
                           </div>
                         )}
+
+                        {/* Reaction bar — grouped emoji counts */}
+                        {msg.reactions && msg.reactions.length > 0 && (
+                          <div className="mt-1.5 flex flex-wrap gap-1">
+                            {ALLOWED_REACTION_EMOJIS.map((emoji) => {
+                              const reactors = msg.reactions!.filter((r) => r.emoji === emoji)
+                              if (reactors.length === 0) return null
+                              const mine = reactors.some((r) => r.userId === currentUserId)
+                              return (
+                                <button
+                                  key={emoji}
+                                  type="button"
+                                  onClick={() => handleReaction(msg.id, emoji)}
+                                  className={[
+                                    "flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs transition-all",
+                                    mine
+                                      ? "border-primary/40 bg-primary/10 text-primary font-medium"
+                                      : "border-muted-foreground/20 bg-muted/40 text-foreground/70 hover:bg-muted/70",
+                                  ].join(" ")}
+                                  title={mine ? "Remove reaction" : "Add reaction"}
+                                >
+                                  <span>{emoji}</span>
+                                  <span>{reactors.length}</span>
+                                </button>
+                              )
+                            })}
+                          </div>
+                        )}
                       </div>
+
+                      {/* Emoji quick-picker — visible on row hover */}
+                      {!isEditing && (
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                          <div className="flex items-center gap-0.5 rounded-xl border bg-popover/95 px-1.5 py-1 shadow-md backdrop-blur-md">
+                            {ALLOWED_REACTION_EMOJIS.map((emoji) => {
+                              const mine = msg.reactions?.some(
+                                (r) => r.emoji === emoji && r.userId === currentUserId
+                              )
+                              return (
+                                <button
+                                  key={emoji}
+                                  type="button"
+                                  onClick={() => handleReaction(msg.id, emoji)}
+                                  className={[
+                                    "flex size-7 items-center justify-center rounded-lg text-base transition-all hover:scale-125",
+                                    mine ? "bg-primary/10" : "hover:bg-muted",
+                                  ].join(" ")}
+                                  title={mine ? `Remove ${emoji}` : `React with ${emoji}`}
+                                >
+                                  {emoji}
+                                </button>
+                              )
+                            })}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </ContextMenuTrigger>
 

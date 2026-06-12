@@ -1,4 +1,4 @@
-// lib/cookies.ts
+ 
 import { cookies } from 'next/headers'
 
 export async function setAuthCookie(token: string) {

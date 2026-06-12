@@ -2,11 +2,13 @@
 
 import { ResourceService } from "@/lib/services/resource-service"
 import { DocumentIndexingService } from "@/lib/services/document-indexing-service"
+import { ResourceChapterRepository } from "@/lib/repositories/resource-chapter-repository"
 import { actionError, getActionUserId, type ActionResult } from "@/lib/actions/utils"
 import type { ClassResource, ResourceChapter } from "@/lib/types/database"
 
 const resourceService = new ResourceService()
 const documentIndexingService = new DocumentIndexingService()
+const resourceChapterRepository = new ResourceChapterRepository()
 
 function isIndexableFile(fileType: string, title: string): boolean {
   const t = fileType.toLowerCase()
@@ -50,12 +52,20 @@ export async function uploadResourceAction(data: {
 
     if (isIndexableFile(resource.fileType, resource.title)) {
       try {
+        // Resolve the chapter title so the AI can reference it in context
+        let chapterTitle: string | undefined
+        if (resource.chapterId) {
+          const chapter = await resourceChapterRepository.getById(resource.chapterId)
+          chapterTitle = chapter?.title
+        }
+
         await documentIndexingService.indexResource(
           resource.classId,
           resource.id,
           resource.fileUrl,
           resource.fileType,
-          resource.title
+          resource.title,
+          chapterTitle
         )
         return { success: true, data: { ...resource, aiIndexed: true } }
       } catch {
@@ -87,12 +97,20 @@ export async function indexResourceAction(
     const resource = await resourceService.getResource(resourceId, userId)
     if (!resource) return { success: false, error: "Resource not found" }
 
+    // Resolve chapter title so the AI knows which chapter this resource belongs to
+    let chapterTitle: string | undefined
+    if (resource.chapterId) {
+      const chapter = await resourceChapterRepository.getById(resource.chapterId)
+      chapterTitle = chapter?.title
+    }
+
     const result = await documentIndexingService.indexResource(
       resource.classId,
       resource.id,
       resource.fileUrl,
       resource.fileType,
-      resource.title
+      resource.title,
+      chapterTitle
     )
     return { success: true, data: result }
   } catch (e) {

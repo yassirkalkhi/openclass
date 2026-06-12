@@ -2,7 +2,8 @@
 
 import { ChatService } from "@/lib/services/chat-service"
 import { actionError, getActionUserId, type ActionResult } from "@/lib/actions/utils"
-import type { Message, MessageAttachment } from "@/lib/types/database"
+import type { Message, MessageAttachment, MessageReaction } from "@/lib/types/database"
+import { ALLOWED_REACTION_EMOJIS } from "@/lib/chat/reactions"
 
 import { ProfileRepository } from "@/lib/repositories/profile-repository"
 
@@ -40,8 +41,7 @@ export async function sendMessageAction(
   try {
     const userId = await getActionUserId()
     const message = await chatService.sendMessage(channelId, userId, content, { attachments })
-    
-    // Enrich with sender profile
+ 
     const profile = await profileRepository.getById(userId)
     const enrichedMessage = {
       ...message,
@@ -60,12 +60,8 @@ export async function editMessageAction(
 ): Promise<ActionResult<Message>> {
   try {
     const userId = await getActionUserId()
-    await chatService.editMessage(messageId, content, userId)
-    
-    // Fetch the updated message to return it
-    const message = await chatService.getMessageById(messageId, userId)
-    
-    // Enrich with sender profile
+    const message = await chatService.editMessage(messageId, content, userId)
+ 
     const profile = await profileRepository.getById(message.senderId)
     const enrichedMessage = {
       ...message,
@@ -82,6 +78,35 @@ export async function deleteMessageAction(messageId: string): Promise<ActionResu
   try {
     const userId = await getActionUserId()
     await chatService.deleteMessage(messageId, userId)
+    return { success: true, data: undefined }
+  } catch (e) {
+    return actionError(e)
+  }
+}
+
+export async function addReactionAction(
+  messageId: string,
+  emoji: string
+): Promise<ActionResult<MessageReaction>> {
+  try {
+    if (!(ALLOWED_REACTION_EMOJIS as readonly string[]).includes(emoji)) {
+      return { success: false, error: "Invalid emoji" }
+    }
+    const userId = await getActionUserId()
+    const reaction = await chatService.addReaction(messageId, userId, emoji)
+    return { success: true, data: reaction }
+  } catch (e) {
+    return actionError(e)
+  }
+}
+
+export async function removeReactionAction(
+  messageId: string,
+  emoji: string
+): Promise<ActionResult> {
+  try {
+    const userId = await getActionUserId()
+    await chatService.removeReaction(messageId, userId, emoji)
     return { success: true, data: undefined }
   } catch (e) {
     return actionError(e)

@@ -13,10 +13,7 @@ const permissionService = new PermissionService()
 const documentIndexingService = new DocumentIndexingService()
 
 export class ResourceService {
-  /**
-   * Upload a resource to the class media pool.
-   * Checks class settings for student upload permissions.
-   */
+ 
 
   async uploadResource(
     data: Pick<ClassResource, "classId" | "title" | "fileName" | "fileUrl" | "fileType" | "fileSize"> & {
@@ -62,9 +59,7 @@ export class ResourceService {
     return resource
   }
 
-  /**
-   * Update a resource's metadata.
-   */
+ 
   async updateResource(
     resourceId: string,
     data: Partial<Pick<ClassResource, "title" | "description" | "tags" | "linkedAssignmentId">>,
@@ -80,10 +75,7 @@ export class ResourceService {
 
     await resourceRepository.update(resourceId, data)
   }
-
-  /**
-   * Delete a resource.
-   */
+ 
   async deleteResource(resourceId: string, userId: string): Promise<void> {
     const resource = await resourceRepository.getById(resourceId)
     if (!resource) throw new Error("Resource not found")
@@ -97,9 +89,7 @@ export class ResourceService {
     await resourceRepository.delete(resourceId)
   }
 
-  /**
-   * Get all resources for a class.
-   */
+ 
   async getResourcesForClass(
     classId: string,
     userId: string
@@ -107,10 +97,7 @@ export class ResourceService {
     await permissionService.requireMembership(classId, userId)
     return resourceRepository.getByClass(classId)
   }
-
-  /**
-   * Get resources filtered by tags.
-   */
+ 
   async getResourcesByTags(
     classId: string,
     tags: string[],
@@ -119,10 +106,7 @@ export class ResourceService {
     await permissionService.requireMembership(classId, userId)
     return resourceRepository.getByTags(classId, tags)
   }
-
-  /**
-   * Get resources linked to an assignment.
-   */
+ 
   async getResourcesByAssignment(
     assignmentId: string,
     userId: string,
@@ -131,31 +115,21 @@ export class ResourceService {
     await permissionService.requireMembership(classId, userId)
     return resourceRepository.getByAssignment(assignmentId)
   }
-
-  /**
-   * Mark a resource as AI-indexed (after embedding pipeline processes it).
-   */
+ 
   async markAsAIIndexed(resourceId: string): Promise<void> {
     await resourceRepository.markAsIndexed(resourceId)
   }
 
-  /**
-   * Get all AI-indexed resources for a class (for RAG context).
-   */
+ 
   async getAIIndexedResources(classId: string): Promise<ClassResource[]> {
     return resourceRepository.getAIIndexed(classId)
   }
 
-  /**
-   * Get resources not yet indexed for AI.
-   */
+ 
   async getUnindexedResources(classId: string): Promise<ClassResource[]> {
     return resourceRepository.getNotIndexed(classId)
   }
-
-  /**
-   * Link a resource to an assignment.
-   */
+ 
   async linkToAssignment(
     resourceId: string,
     assignmentId: string,
@@ -171,9 +145,8 @@ export class ResourceService {
     })
   }
 
-  /**
-   * Get a single resource.
-   */
+ 
+
   async getResource(
     resourceId: string,
     userId: string
@@ -187,14 +160,12 @@ export class ResourceService {
 
   // ─── Chapters ────────────────────────────────────────────────────────────────
 
-  /** Get all chapters for a class, ordered by position. */
-  async getChaptersForClass(classId: string, userId: string): Promise<ResourceChapter[]> {
+   async getChaptersForClass(classId: string, userId: string): Promise<ResourceChapter[]> {
     await permissionService.requireMembership(classId, userId)
     return resourceChapterRepository.getByClass(classId)
   }
 
-  /** Create a new chapter. Only teachers/owners can manage chapters. */
-  async createChapter(
+   async createChapter(
     data: { classId: string; title: string; description?: string },
     userId: string
   ): Promise<ResourceChapter> {
@@ -219,8 +190,7 @@ export class ResourceService {
     return chapter
   }
 
-  /** Update a chapter's title or description. */
-  async updateChapter(
+   async updateChapter(
     chapterId: string,
     data: { title?: string; description?: string },
     userId: string
@@ -236,15 +206,13 @@ export class ResourceService {
     })
   }
 
-  /** Delete a chapter and move its resources to uncategorized. */
-  async deleteChapter(chapterId: string, userId: string): Promise<void> {
+   async deleteChapter(chapterId: string, userId: string): Promise<void> {
     const chapter = await resourceChapterRepository.getById(chapterId)
     if (!chapter) throw new Error("Chapter not found")
 
     await permissionService.requirePermission(chapter.classId, userId, "manage_class")
 
-    // Un-assign resources from this chapter
-    const resources = await resourceRepository.getByChapter(chapterId)
+     const resources = await resourceRepository.getByChapter(chapterId)
     for (const r of resources) {
       await resourceRepository.update(r.id, { chapterId: undefined })
     }
@@ -252,8 +220,7 @@ export class ResourceService {
     await resourceChapterRepository.delete(chapterId)
   }
 
-  /** Move a resource into (or out of) a chapter. */
-  async moveResourceToChapter(
+   async moveResourceToChapter(
     resourceId: string,
     chapterId: string | null,
     userId: string

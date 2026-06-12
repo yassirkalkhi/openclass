@@ -1,14 +1,17 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
-import { useParams } from "next/navigation"
+import React, { useEffect, useRef, useState } from "react"
+import { useParams, useRouter } from "next/navigation"
 import {
   getAssignmentAction,
   getAssignmentSubmissionsAction,
   submitAssignmentAction,
   saveDraftAction,
   gradeSubmissionAction,
+  updateAssignmentAction,
+  deleteAssignmentAction,
 } from "@/app/actions/assignment"
+import { getClassMembersAction } from "@/app/actions/class"
 import { useClass } from "@/context/class-context"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
@@ -20,19 +23,22 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import type { Assignment, AssignmentSubmission, MessageAttachment } from "@/lib/types/database"
-import { Calendar, Clock, FileText, Send, Save, CheckCircle2, AlertCircle, User, Award, ArrowLeft, Paperclip, X, FileIcon, Loader2 } from "lucide-react"
+import {
+  Calendar, Clock, FileText, Send, Save, CheckCircle2, AlertCircle, User,
+  Award, ArrowLeft, Paperclip, X, FileIcon, Loader2, Pencil, Trash2,
+} from "lucide-react"
 import { format, isPast } from "date-fns"
 import Link from "next/link"
 import { useI18n } from "@/lib/i18n/context"
 import { useUploadThing } from "@/lib/uploadthing"
 import { generateId } from "@/lib/utils"
 
-function getStatusInfo(status: AssignmentSubmission["status"], t: any) {
+function getStatusInfo(status: AssignmentSubmission["status"], t: ReturnType<typeof useI18n>["t"]) {
   return {
-    draft: { variant: "outline" as const, icon: FileText, label: t.assignments.draft },
-    submitted: { variant: "default" as const, icon: CheckCircle2, label: t.assignments.submitted },
-    late: { variant: "destructive" as const, icon: AlertCircle, label: t.assignments.late },
-    graded: { variant: "secondary" as const, icon: Award, label: t.assignments.graded },
+    draft:     { variant: "outline"      as const, icon: FileText,    label: t.assignments.draft },
+    submitted: { variant: "default"      as const, icon: CheckCircle2, label: t.assignments.submitted },
+    late:      { variant: "destructive"  as const, icon: AlertCircle,  label: t.assignments.late },
+    graded:    { variant: "secondary"    as const, icon: Award,        label: t.assignments.graded },
   }[status] ?? { variant: "outline" as const, icon: FileText, label: t.assignments.draft }
 }
 
@@ -47,10 +53,7 @@ function AttachmentList({
   return (
     <ul className="space-y-1.5 mt-2">
       {attachments.map((att) => (
-        <li
-          key={att.id}
-          className="flex items-center gap-2 rounded-lg border border-border bg-muted/40 px-3 py-2 text-sm"
-        >
+        <li key={att.id} className="flex items-center gap-2 rounded-lg border border-border bg-muted/40 px-3 py-2 text-sm">
           <FileIcon className="size-4 shrink-0 text-muted-foreground" />
           <a
             href={att.fileUrl}
@@ -79,22 +82,294 @@ function AttachmentList({
   )
 }
 
+// ─── Edit dialog ──────────────────────────────────────────────────────────────
+
+function EditAssignmentDialog({
+  assignment,
+  classId,
+  open,
+  onOpenChange,
+  onSaved,
+}: {
+  assignment: Assignment
+  classId: string
+  open: boolean
+  onOpenChange: (v: boolean) => void
+  onSaved: () => void
+}) {
+  const { t } = useI18n()
+  const [form, setForm] = useState({
+    title: assignment.title,
+    description: assignment.description ?? "",
+    dueDate: assignment.dueDate ? assignment.dueDate.slice(0, 16) : "",
+    maxScore: assignment.maxScore !== undefined ? String(assignment.maxScore) : "",
+    allowLateSubmission: assignment.allowLateSubmission ?? false,
+  })
+  const [attachmentUrls, setAttachmentUrls] = useState<string[]>(assignment.attachments ?? [])
+  const [attachmentNames, setAttachmentNames] = useState<string[]>(
+    assignment.attachmentNames?.length
+      ? assignment.attachmentNames
+      : (assignment.attachments ?? []).map((url) => decodeURIComponent(url.split("/").pop()?.split("?")[0] ?? "file.pdf"))
+  )
+  const [saving, setSaving] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+   useEffect(() => {
+    setForm({
+      title: assignment.title,
+      description: assignment.description ?? "",
+      dueDate: assignment.dueDate ? assignment.dueDate.slice(0, 16) : "",
+      maxScore: assignment.maxScore !== undefined ? String(assignment.maxScore) : "",
+      allowLateSubmission: assignment.allowLateSubmission ?? false,
+    })
+    setAttachmentUrls(assignment.attachments ?? [])
+    setAttachmentNames(
+      assignment.attachmentNames?.length
+        ? assignment.attachmentNames
+        : (assignment.attachments ?? []).map((url) => decodeURIComponent(url.split("/").pop()?.split("?")[0] ?? "file.pdf"))
+    )
+  }, [assignment, open])
+
+  const { startUpload, isUploading } = useUploadThing("classFile", {
+    onClientUploadComplete: (res: Array<{ serverData: unknown; url: string; name: string }>) => {
+      const urls = res.map((f) => (f.serverData as { fileUrl?: string } | undefined)?.fileUrl ?? f.url)
+      const names = res.map((f) => (f.serverData as { fileName?: string } | undefined)?.fileName ?? f.name)
+      setAttachmentUrls((prev) => [...prev, ...urls])
+      setAttachmentNames((prev) => [...prev, ...names])
+    },
+    onUploadError: (err: Error) => console.error("Upload error:", err.message),
+  })
+
+  async function handleSave(e: React.FormEvent) {
+    e.preventDefault()
+    setSaving(true)
+    const result = await updateAssignmentAction(assignment.id, {
+      title: form.title,
+      description: form.description || undefined,
+      attachments: attachmentUrls.length > 0 ? attachmentUrls : [],
+      attachmentNames: attachmentNames.length > 0 ? attachmentNames : [],
+      dueDate: form.dueDate || undefined,
+      maxScore: form.maxScore ? Number(form.maxScore) : undefined,
+      allowLateSubmission: form.allowLateSubmission,
+    })
+    setSaving(false)
+    if (result.success) {
+      onOpenChange(false)
+      onSaved()
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="!w-[520px] !max-w-[calc(100vw-2rem)] overflow-hidden flex flex-col p-0 gap-0">
+        {/* Scrollable body */}
+        <div className="overflow-y-auto max-h-[85vh] p-6 flex flex-col gap-4">
+          <div className="flex flex-col gap-1">
+            <h2 className="font-heading text-base font-medium leading-none">{t.assignments.editAssignment}</h2>
+            <p className="text-sm text-muted-foreground">{t.assignments.editAssignmentDesc}</p>
+          </div>
+
+          <form id="edit-assignment-form" onSubmit={handleSave} className="flex flex-col gap-4">
+            {/* Title */}
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="edit-title">{t.assignments.titleLabel}</Label>
+              <Input
+                id="edit-title"
+                value={form.title}
+                onChange={(e) => setForm({ ...form, title: e.target.value })}
+                placeholder={t.assignments.titlePlaceholder}
+                required
+                disabled={saving}
+              />
+            </div>
+
+            {/* Description */}
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="edit-desc">{t.assignments.descriptionLabel}</Label>
+              <Textarea
+                id="edit-desc"
+                value={form.description}
+                onChange={(e) => setForm({ ...form, description: e.target.value })}
+                placeholder={t.assignments.descriptionPlaceholder}
+                rows={3}
+                disabled={saving}
+                className="resize-none"
+              />
+            </div>
+
+            {/* Due date + max score */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="edit-dueDate">{t.assignments.dueDateLabel}</Label>
+                <Input
+                  id="edit-dueDate"
+                  type="datetime-local"
+                  value={form.dueDate}
+                  onChange={(e) => setForm({ ...form, dueDate: e.target.value })}
+                  disabled={saving}
+                  className="text-xs"
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="edit-maxScore">{t.assignments.maxScorePoints}</Label>
+                <Input
+                  id="edit-maxScore"
+                  type="number"
+                  value={form.maxScore}
+                  onChange={(e) => setForm({ ...form, maxScore: e.target.value })}
+                  placeholder="100"
+                  min="0"
+                  disabled={saving}
+                />
+              </div>
+            </div>
+
+            {/* PDF Attachments */}
+            <div className="flex flex-col gap-1.5">
+              <Label>{t.assignments.attachments}</Label>
+              <div className="flex flex-wrap items-center gap-2">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="application/pdf,.pdf"
+                  multiple
+                  className="hidden"
+                  disabled={saving || isUploading}
+                  onChange={async (e) => {
+                    const files = e.target.files
+                    if (!files?.length) return
+                    const pdfs = Array.from(files).filter((f) => f.type === "application/pdf")
+                    if (!pdfs.length) return
+                    await startUpload(pdfs, { classId })
+                    e.target.value = ""
+                  }}
+                />
+                <button
+                  type="button"
+                  disabled={saving || isUploading}
+                  onClick={() => fileInputRef.current?.click()}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-input bg-background px-3 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground disabled:pointer-events-none disabled:opacity-50 transition-colors"
+                >
+                  {isUploading ? <Loader2 className="size-3.5 animate-spin" /> : <Paperclip className="size-3.5" />}
+                  {isUploading ? t.assignments.uploadingAttachment : t.assignments.attachFile}
+                </button>
+                <span className="text-xs text-muted-foreground">{t.assignments.pdfOnly}</span>
+              </div>
+              {attachmentNames.length > 0 && (
+                <ul className="flex flex-col gap-1.5 mt-0.5">
+                  {attachmentNames.map((name, i) => (
+                    <li key={i} className="flex items-center gap-2 rounded-lg border border-border bg-muted/40 px-3 py-2 text-sm min-w-0">
+                      <FileIcon className="size-4 shrink-0 text-muted-foreground" />
+                      <span className="flex-1 truncate min-w-0 text-xs">{name}</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAttachmentUrls((prev) => prev.filter((_, j) => j !== i))
+                          setAttachmentNames((prev) => prev.filter((_, j) => j !== i))
+                        }}
+                        className="shrink-0 rounded-full p-0.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+                        aria-label={t.assignments.removeAttachment}
+                      >
+                        <X className="size-3.5" />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </form>
+        </div>
+
+        {/* Sticky footer */}
+        <div className="flex items-center justify-between border-t border-border px-6 py-4 bg-popover shrink-0">
+          <label className="flex items-center gap-2 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={form.allowLateSubmission}
+              onChange={(e) => setForm({ ...form, allowLateSubmission: e.target.checked })}
+              disabled={saving}
+              className="h-4 w-4 rounded border-primary accent-primary cursor-pointer"
+            />
+            <span className="text-sm font-medium">{t.assignments.allowLateSubmissions}</span>
+          </label>
+          <div className="flex gap-2">
+            <Button type="button" variant="outline" size="sm" onClick={() => onOpenChange(false)} disabled={saving}>
+              {t.common.cancel}
+            </Button>
+            <Button form="edit-assignment-form" type="submit" size="sm" disabled={saving || isUploading}>
+              {saving && <Loader2 className="size-3.5 animate-spin mr-1.5" />}
+              {saving ? t.assignments.saving : t.assignments.saveChanges}
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+// ─── Delete confirm dialog ────────────────────────────────────────────────────
+
+function DeleteAssignmentDialog({
+  open,
+  onOpenChange,
+  onConfirm,
+  deleting,
+}: {
+  open: boolean
+  onOpenChange: (v: boolean) => void
+  onConfirm: () => void
+  deleting: boolean
+}) {
+  const { t } = useI18n()
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle className="text-destructive">{t.assignments.deleteAssignmentConfirmTitle}</DialogTitle>
+          <DialogDescription>{t.assignments.deleteAssignmentConfirmDesc}</DialogDescription>
+        </DialogHeader>
+        <div className="flex justify-end gap-2 pt-2">
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={deleting}>
+            {t.common.cancel}
+          </Button>
+          <Button variant="destructive" onClick={onConfirm} disabled={deleting}>
+            {deleting ? <Loader2 className="size-4 animate-spin mr-2" /> : <Trash2 className="size-4 mr-2" />}
+            {deleting ? t.assignments.deleting : t.assignments.deleteAssignmentConfirm}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+// ─── Main page ────────────────────────────────────────────────────────────────
+
 export default function AssignmentDetailPage() {
   const { assignmentId, classSlug } = useParams<{ assignmentId: string; classSlug: string }>()
+  const router = useRouter()
   const { membership, classData } = useClass()
   const { t } = useI18n()
+
   const [assignment, setAssignment] = useState<Assignment | null>(null)
   const [submissions, setSubmissions] = useState<AssignmentSubmission[]>([])
+  const [studentNames, setStudentNames] = useState<Map<string, string>>(new Map())
   const [content, setContent] = useState("")
   const [attachments, setAttachments] = useState<MessageAttachment[]>([])
   const [loading, setLoading] = useState(false)
+
+  // Grade dialog
   const [gradeDialog, setGradeDialog] = useState<{ open: boolean; submission: AssignmentSubmission | null }>({ open: false, submission: null })
   const [gradeForm, setGradeForm] = useState({ score: "", feedback: "" })
+
+  // Edit / delete dialogs
+  const [editOpen, setEditOpen] = useState(false)
+  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [deleting, setDeleting] = useState(false)
 
   const isStudent = membership.role === "student"
   const isTeacher = membership.role === "teacher"
 
-  const fileInputRef = React.useRef<HTMLInputElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const { startUpload, isUploading } = useUploadThing("classFile", {
     onClientUploadComplete: (res: Array<{ serverData: unknown; url: string; name: string; type: string; size: number }>) => {
@@ -112,9 +387,7 @@ export default function AssignmentDetailPage() {
       })
       setAttachments((prev) => [...prev, ...newAttachments])
     },
-    onUploadError: (err: Error) => {
-      console.error("Upload error:", err.message)
-    },
+    onUploadError: (err: Error) => console.error("Upload error:", err.message),
   })
 
   useEffect(() => { loadData() }, [assignmentId])
@@ -130,6 +403,17 @@ export default function AssignmentDetailPage() {
       if (isStudent && submissionsRes.data[0]) {
         setContent(submissionsRes.data[0].content || "")
         setAttachments(submissionsRes.data[0].attachments || [])
+      }
+    }
+    if (isTeacher) {
+      const membersRes = await getClassMembersAction(classData.id)
+      if (membersRes.success && membersRes.data) {
+        const map = new Map<string, string>()
+        for (const m of membersRes.data) {
+          const name = m.profile?.fullName || m.profile?.email || m.userId
+          map.set(m.userId, name)
+        }
+        setStudentNames(map)
       }
     }
   }
@@ -177,6 +461,15 @@ export default function AssignmentDetailPage() {
     }
   }
 
+  async function handleDelete() {
+    setDeleting(true)
+    const result = await deleteAssignmentAction(assignmentId)
+    setDeleting(false)
+    if (result.success) {
+      router.push(`/app/${classSlug}/assignments`)
+    }
+  }
+
   if (!assignment) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -212,12 +505,26 @@ export default function AssignmentDetailPage() {
                   <p className="text-muted-foreground">{assignment.description}</p>
                 )}
               </div>
-              {mySubmission && (
-                <Badge variant={getStatusInfo(mySubmission.status, t).variant} className="shrink-0">
-                  {React.createElement(getStatusInfo(mySubmission.status, t).icon, { className: "size-3 mr-1" })}
-                  {getStatusInfo(mySubmission.status, t).label}
-                </Badge>
-              )}
+              <div className="flex items-center gap-2 shrink-0">
+                {mySubmission && (
+                  <Badge variant={getStatusInfo(mySubmission.status, t).variant}>
+                    {React.createElement(getStatusInfo(mySubmission.status, t).icon, { className: "size-3 mr-1" })}
+                    {getStatusInfo(mySubmission.status, t).label}
+                  </Badge>
+                )}
+                {isTeacher && (
+                  <>
+                    <Button variant="outline" size="sm" onClick={() => setEditOpen(true)}>
+                      <Pencil className="size-4 mr-1.5" />
+                      {t.common.edit}
+                    </Button>
+                    <Button variant="outline" size="sm" className="text-destructive hover:text-destructive border-destructive/30 hover:border-destructive hover:bg-destructive/5" onClick={() => setDeleteOpen(true)}>
+                      <Trash2 className="size-4 mr-1.5" />
+                      {t.common.delete}
+                    </Button>
+                  </>
+                )}
+              </div>
             </div>
           </div>
 
@@ -246,6 +553,32 @@ export default function AssignmentDetailPage() {
                 <div className="flex items-center gap-2 text-sm">
                   <Clock className="size-4 text-muted-foreground" />
                   <span className="text-muted-foreground">{t.assignments.lateSubmissionsAllowed}</span>
+                </div>
+              )}
+              {assignment.attachments && assignment.attachments.length > 0 && (
+                <div className="pt-1">
+                  <p className="text-xs font-medium text-muted-foreground mb-2">{t.assignments.attachedFiles}</p>
+                  <ul className="space-y-1.5">
+                    {assignment.attachments.map((url, i) => {
+                      const storedName = assignment.attachmentNames?.[i]
+                      const fileName = storedName
+                        ? storedName
+                        : decodeURIComponent(url.split("/").pop()?.split("?")[0] ?? `attachment-${i + 1}.pdf`)
+                      return (
+                        <li key={i} className="flex items-center gap-2 rounded-lg border border-border bg-muted/40 px-3 py-2 text-sm">
+                          <FileIcon className="size-4 shrink-0 text-muted-foreground" />
+                          <a
+                            href={url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex-1 truncate text-primary underline underline-offset-2 hover:text-primary/80"
+                          >
+                            {fileName}
+                          </a>
+                        </li>
+                      )
+                    })}
+                  </ul>
                 </div>
               )}
             </CardContent>
@@ -293,7 +626,6 @@ export default function AssignmentDetailPage() {
                     </div>
                   </div>
                 ) : isSubmitted ? (
-                  /* Show read-only submitted content */
                   <div className="space-y-3">
                     <div className="rounded-lg border p-4 bg-muted/50">
                       <p className="text-sm whitespace-pre-wrap">{mySubmission?.content}</p>
@@ -325,7 +657,6 @@ export default function AssignmentDetailPage() {
                       />
                     </div>
 
-                    {/* PDF Attachment Section */}
                     {canSubmit && (
                       <div className="space-y-2">
                         <Label>{t.assignments.attachments}</Label>
@@ -346,11 +677,7 @@ export default function AssignmentDetailPage() {
                             disabled={loading || isUploading}
                             onClick={() => fileInputRef.current?.click()}
                           >
-                            {isUploading ? (
-                              <Loader2 className="size-4 mr-2 animate-spin" />
-                            ) : (
-                              <Paperclip className="size-4 mr-2" />
-                            )}
+                            {isUploading ? <Loader2 className="size-4 mr-2 animate-spin" /> : <Paperclip className="size-4 mr-2" />}
                             {isUploading ? t.assignments.uploadingAttachment : t.assignments.attachFile}
                           </Button>
                           <span className="text-xs text-muted-foreground">{t.assignments.pdfOnly}</span>
@@ -417,7 +744,7 @@ export default function AssignmentDetailPage() {
                               <div className="flex items-center gap-2">
                                 <User className="size-4 text-muted-foreground" />
                                 <span className="font-medium text-sm">
-                                  {t.assignments.studentId} {submission.studentId.slice(0, 8)}
+                                  {studentNames.get(submission.studentId) ?? submission.studentId.slice(0, 8)}
                                 </span>
                               </div>
                               <Badge variant={statusInfo.variant}>
@@ -524,7 +851,25 @@ export default function AssignmentDetailPage() {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Edit Assignment Dialog */}
+      {assignment && (
+        <EditAssignmentDialog
+          assignment={assignment}
+          classId={classData.id}
+          open={editOpen}
+          onOpenChange={setEditOpen}
+          onSaved={loadData}
+        />
+      )}
+
+      {/* Delete Assignment Confirm */}
+      <DeleteAssignmentDialog
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        onConfirm={handleDelete}
+        deleting={deleting}
+      />
     </div>
   )
 }
-

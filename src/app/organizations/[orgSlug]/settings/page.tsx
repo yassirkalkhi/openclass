@@ -31,7 +31,7 @@ export default async function OrgSettingsPage({
   return (
     <div className="min-h-svh bg-muted/30">
       <GlobalHeader></GlobalHeader>
-      <main className="mx-auto max-w-2xl p-6">
+      <main className="mx-auto max-w-7xl px-4 py-6">
         <OrgSettingsClient organization={org} members={members} />
       </main>
     </div>

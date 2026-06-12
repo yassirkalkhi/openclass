@@ -3,9 +3,7 @@
 import { useTranslation } from "@/lib/i18n/context"
 import { Button } from "@/components/ui/button"
 
-/**
- * Example component showing how to use translations
- */
+ 
 export function I18nExample() {
   const { t: common } = useTranslation("common")
   const { t: nav } = useTranslation("nav")

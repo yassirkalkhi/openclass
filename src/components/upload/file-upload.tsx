@@ -9,8 +9,7 @@ import { useUploadThing, type UploadedFileResult } from "@/lib/uploadthing"
 
 type UploadResult = UploadedFileResult
 
-// Allowed file formats collection for the validation safety fallback
-const ALLOWED_TYPES = [
+ const ALLOWED_TYPES = [
   "application/pdf",
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // .docx
   "image/jpeg",
@@ -63,11 +62,9 @@ export function FileUpload({
     if (!files?.length || disabled || isUploading) return
     setError(null)
 
-    // Convert to native array to handle filters cleanly
-    const rawList = multiple ? Array.from(files) : [files[0]]
+     const rawList = multiple ? Array.from(files) : [files[0]]
 
-    // Validate if every single selected file matches our strict format requirements
-    const invalidFiles = rawList.filter((file) => !ALLOWED_TYPES.includes(file.type))
+     const invalidFiles = rawList.filter((file) => !ALLOWED_TYPES.includes(file.type))
     
     if (invalidFiles.length > 0) {
       setError("Invalid file format. Only images, and documents")
